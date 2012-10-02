@@ -12,6 +12,12 @@
 
 #define MAX_NODES 10
 
+#define RETURN_FAILURE 1
+#define RETURN_SUCCESS 0
+
+#define TRUE 1
+#define FALSE 0
+
 /*
  * Comment the below line if you
  * want to disable debug mode
@@ -29,13 +35,14 @@
 	#define PATH_SEPARATOR '/'
 #endif
 
+/* Global connection list variable */
 struct node {
-	char ip[10];
-	char socket[10];
-} n[MAX_NODES];
+	int sock;
+	char name[20];
+} con_list [ MAX_NODES ];
 
 /* Function declerations */
 
 const char* get_program_name ( char[] );
 
-int is_command ( char * );
+void setup_listen_thread ( int );

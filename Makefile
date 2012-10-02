@@ -1,5 +1,8 @@
 CC := gcc
-OBJECTS := main.o helper.o
+OBJECTS := main.o helper.o tcp.o
+
+#%.o: %.c
+#	$(CC) -c -o $@ $< $(LDFLAGS)
 
 #Flags
 CFLAGS := -Wall
@@ -9,7 +12,7 @@ LDLIBS :=
 ragam: $(OBJECTS)
 	gcc -o ragam $(OBJECTS) $(LDFLAGS)
 
-main.o helper.o: my_header.h
+#main.o helper.o: my_header.h
 
 clobber: clean
 	-rm -f ragam
