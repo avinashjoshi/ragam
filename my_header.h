@@ -10,7 +10,7 @@
  */
 #define LISTEN_PORT 31337
 
-#define MAX_NODES 10
+#define MAX_NODES 2
 
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0

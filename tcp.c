@@ -20,7 +20,7 @@
 void
 *handle_socket ( void *new_sock ) {
 	fprintf ( stdout, "Yahoo! got a new connection\n" );
-	close (new_sock);
+	//close (new_sock);
 	return NULL;
 }
 
@@ -136,7 +136,7 @@ setup_connect_to ( int port ) {
 	// for (list)
 
 	// Check if socket associated w/ host
-	if ( (sock = is_connected ( "localhost" )) != -1 ) {
+	if ( (sock = is_connected ( "net01" )) != -1 ) {
 		/* Oops! looks like a socket is associated with that node */
 		printf ( "Already connected");
 		//continue;
@@ -158,6 +158,7 @@ setup_connect_to ( int port ) {
 		sprintf( buf, "%s: unknown host\n", host);
 		printf( buf );
 	}
+	
 	bcopy( hp->h_addr, &server.sin_addr, hp->h_length );
 	server.sin_port = htons( (u_short) port );
 
