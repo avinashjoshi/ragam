@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <unistd.h>
 
 #define BUFF_SIZE 1024
 
@@ -19,8 +20,9 @@
  */
 void
 *handle_socket ( void *new_sock ) {
+	int sock = (int) new_sock;
 	fprintf ( stdout, "Yahoo! got a new connection\n" );
-	//close (new_sock);
+	close (sock);
 	return NULL;
 }
 
@@ -31,6 +33,7 @@ void
 void
 *handle_listen ( void *tport ) {
 
+	int nodes_index = 0;
 	int sock;
 	pthread_t thread;
 	struct addrinfo hints, *res;
@@ -44,7 +47,7 @@ void
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	if ( getaddrinfo ( NULL, port_str, &hints, &res ) != 0 ) {
-		perror ( "getaddrinfo()" );
+		printf ( "getaddrinfo()" );
 		return NULL;
 	}
 
@@ -61,11 +64,15 @@ void
 		return NULL;
 	}
 
+	printf ( "socket()" );
+
 	/* Bind to sock address */
 	if ( bind ( sock, res->ai_addr, res->ai_addrlen ) == -1 ) {
 		perror ( "bind()" );
 		return NULL;
 	}
+
+	printf ( "BOUND....\n" );
 
 	freeaddrinfo ( res );
 
@@ -88,9 +95,14 @@ void
 			DBG (( "Received connection from %s on port %d", inet_ntoa(their_addr.sin_addr), htons(their_addr.sin_port)));
 			if ( pthread_create ( &thread, NULL, handle_socket, &newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );
+				continue;
+			} else {
+				nodes_index ++;
 			}
 		}
-	} while ( 1 );
+	} while ( nodes_index < MAX_NODES );
+	printf ( "Closing sockets....\n");
+	close ( sock );
 	pthread_exit ( NULL );
 }
 
@@ -180,6 +192,7 @@ setup_connect_to ( int port ) {
 	if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
 		printf ( "Writing on stream socket" );
 
+	printf ("Sent...!");
 	// thread for handle_socket
 	// to read data on that socket
 
