@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #define BUFF_SIZE 1024
+#define MAX_HOST_LEN 100
 
 /*
  * Handles new socket after accept
@@ -132,13 +133,16 @@ void
 setup_connect_to ( int port ) {
 
 	int index_list = 0;
-	char host[] = "localhost";
+	char host[MAX_HOST_LEN];
 	int sock;
 	struct sockaddr_in server;   /* Socket info. for server */
 	struct sockaddr_in client;   /* Socket info. about us */
 	int clientLen;   /* Length of client socket struct. */
 	struct hostent *hp;   /* Return value from gethostbyname() */
 	char buf[BUFF_SIZE];   /* Received data buffer */
+
+	gethostname ( host, sizeof host );
+	fprintf ( stdout, "Your hostname = %s\n", host );
 
 	/* 
 	 * Go through node_list and check
@@ -152,6 +156,12 @@ setup_connect_to ( int port ) {
 		if ( (sock = is_connected ( node_list[index_list].name )) > -1 ) {
 			/* Oops! looks like a socket is associated with that node */
 			printf ( "Already connected");
+			continue;
+		}
+
+		// Come on! You can't connect to self...
+		if ( strcasecmp ( node_list[index_list].name, host ) == 0 ) {
+			printf ( "Cant connect to self!" );
 			continue;
 		}
 
