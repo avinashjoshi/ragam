@@ -41,8 +41,18 @@ struct node {
 	char name[20];
 } con_list [ MAX_NODES ];
 
+struct nodelist {
+	char name[20];
+} node_list [ MAX_NODES ];
+
 /* Function declerations */
 
 const char* get_program_name ( char[] );
 
 void setup_listen_thread ( int );
+
+void parse_config ( void );
+
+void setup_connect_to ( int );
+
+int is_connected ( char *);

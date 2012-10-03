@@ -32,6 +32,8 @@ main ( int argc, char *argv[] ) {
 	port = LISTEN_PORT;
 #endif
 
+	parse_config ();
+
 	/*
 	 * Setup listen threads that will 
 	 * allow other nodes talk to me
@@ -42,6 +44,7 @@ main ( int argc, char *argv[] ) {
 	 * Now that a thread is ready to listen,
 	 * we will connect to all other clints...
 	 */
+	setup_connect_to ( port );
 	fprintf ( stdout, "Waiting for scanf...." );
 	int a;
 	scanf ( "%d", &a );

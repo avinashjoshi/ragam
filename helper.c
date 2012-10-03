@@ -28,3 +28,49 @@ get_program_name ( char argv[] ) {
 
 	return exec_name;
 }
+
+/*
+ * parse config file...
+ */
+void
+parse_config ( void ) {
+	int index;
+	for ( index = 0; index < MAX_NODES; index++ ) {
+		con_list[index].sock = 0;
+		strncpy ( node_list[index].name, "localhost", sizeof ("localhost") );
+	}
+}
+
+/*
+ * Checks if a node is connected
+ * That is, does a socket exist to a particular node
+ */
+int
+is_connected ( char *node) {
+	int index = 0;
+	int flag = FALSE;
+	for ( ; index < MAX_NODES; index++ ) {
+		if ( strcasecmp ( con_list[index].name, node ) == 0 ) {
+			printf ("%s:", con_list[index].name);
+			flag = TRUE;
+			break;
+		}
+	}
+	if ( flag == TRUE )
+		return index;
+	else
+		return -1;
+}
+
+/*
+ * Add to con_list
+ */
+int
+add_to_conlist ( char *host, int sock ) {
+	// START MUTEX
+	int i = 0;
+	for ( ; i < MAX_NODES; i++ ) {
+	}
+	// END MUTEX
+	return -1;
+}

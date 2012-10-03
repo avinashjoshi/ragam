@@ -12,12 +12,15 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#define BUFF_SIZE 1024
+
 /*
  * Handles new socket after accept
  */
 void
-*handle_accept ( void *new_sock ) {
+*handle_socket ( void *new_sock ) {
 	fprintf ( stdout, "Yahoo! got a new connection\n" );
+	close (new_sock);
 	return NULL;
 }
 
@@ -83,7 +86,7 @@ void
 		}
 		else {
 			DBG (( "Received connection from %s on port %d", inet_ntoa(their_addr.sin_addr), htons(their_addr.sin_port)));
-			if ( pthread_create ( &thread, NULL, handle_accept, &newsock) != 0 ) {
+			if ( pthread_create ( &thread, NULL, handle_socket, &newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );
 			}
 		}
@@ -111,4 +114,73 @@ setup_listen_thread ( int port ) {
 
 	DBG (("created thread"));
 	return;
+}
+
+void
+setup_connect_to ( int port ) {
+
+	char host[] = "localhost";
+	int sock;
+	struct sockaddr_in server;   /* Socket info. for server */
+	struct sockaddr_in client;   /* Socket info. about us */
+	int clientLen;   /* Length of client socket struct. */
+	struct hostent *hp;   /* Return value from gethostbyname() */
+	char buf[BUFF_SIZE];   /* Received data buffer */
+
+	/* 
+	 * Go through node_list and check
+	 * if socket already exists for the host
+	 * if not, connect & create a new thread
+	 */
+
+	// for (list)
+
+	// Check if socket associated w/ host
+	if ( (sock = is_connected ( "localhost" )) != -1 ) {
+		/* Oops! looks like a socket is associated with that node */
+		printf ( "Already connected");
+		//continue;
+	}
+
+	// Looks like host not in con_list
+	// Add to con_list
+	// add_to_conlist (host, socket);
+	// Create a TCP conection to the port
+	/* Opening a socket */
+	if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
+		printf ( "Error in opening socket()\n");
+	}
+
+	/* Preparing to connect to the socket */
+	bzero ( (char *) &server, sizeof server );
+	server.sin_family = AF_INET;
+	if ( (hp = gethostbyname(host) ) == NULL) {
+		sprintf( buf, "%s: unknown host\n", host);
+		printf( buf );
+	}
+	bcopy( hp->h_addr, &server.sin_addr, hp->h_length );
+	server.sin_port = htons( (u_short) port );
+
+	/* Try to connect */
+	if ( connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0 )
+		printf ("Connecting stream socket");
+
+	/* Determine what port client's using. */
+	clientLen = sizeof (client);
+	if ( getsockname (sock, (struct sockaddr *) &client, (socklen_t *)&clientLen))
+		printf ("Getting socket name");
+
+	if ( clientLen != sizeof(client))
+		printf ("getsockname() overwrote name structure");
+
+	printf ("Client socket has port %hu\n", ntohs(client.sin_port));
+
+	/* Write out message. */
+	if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
+		printf ( "Writing on stream socket" );
+
+	// thread for handle_socket
+	// to read data on that socket
+
+	//end for
 }
