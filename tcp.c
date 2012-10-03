@@ -131,6 +131,7 @@ setup_listen_thread ( int port ) {
 void
 setup_connect_to ( int port ) {
 
+	int index_list = 0;
 	char host[] = "localhost";
 	int sock;
 	struct sockaddr_in server;   /* Socket info. for server */
@@ -145,54 +146,61 @@ setup_connect_to ( int port ) {
 	 * if not, connect & create a new thread
 	 */
 
-	// for (list)
+	for ( ; index_list < MAX_NODES; index_list++ ) {
 
-	// Check if socket associated w/ host
-	if ( (sock = is_connected ( "net01" )) != -1 ) {
-		/* Oops! looks like a socket is associated with that node */
-		printf ( "Already connected");
-		//continue;
+		// Check if socket associated w/ host
+		if ( (sock = is_connected ( node_list[index_list].name )) > -1 ) {
+			/* Oops! looks like a socket is associated with that node */
+			printf ( "Already connected");
+			continue;
+		}
+
+		// Looks like host not in con_list
+		// Add to con_list
+		// add_to_conlist (host, socket);
+		// Create a TCP conection to the port
+		/* Opening a socket */
+		if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
+			printf ( "Error in opening socket()\n");
+		}
+
+		/* Preparing to connect to the socket */
+		bzero ( (char *) &server, sizeof server );
+		server.sin_family = AF_INET;
+		if ( (hp = gethostbyname(host) ) == NULL) {
+			sprintf( buf, "%s: unknown host\n", host);
+			printf( buf );
+		}
+
+		bcopy( hp->h_addr, &server.sin_addr, hp->h_length );
+		server.sin_port = htons( (u_short) port );
+
+		/* Try to connect */
+		if ( connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0 ) {
+			printf ("Error: Connecting stream socket");
+			continue;
+		}
+
+		/* Determine what port client's using. */
+		clientLen = sizeof (client);
+		if ( getsockname (sock, (struct sockaddr *) &client, (socklen_t *)&clientLen)) {
+			printf ("Getting socket name");
+			continue;
+		}
+
+		if ( clientLen != sizeof(client)) {
+			printf ("getsockname() overwrote name structure");
+			continue;
+		}
+
+		printf ("Client socket has port %hu\n", ntohs(client.sin_port));
+
+		/* Write out message. */
+		if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
+			printf ( "Writing on stream socket" );
+
+		printf ("Sent...!");
 	}
-
-	// Looks like host not in con_list
-	// Add to con_list
-	// add_to_conlist (host, socket);
-	// Create a TCP conection to the port
-	/* Opening a socket */
-	if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
-		printf ( "Error in opening socket()\n");
-	}
-
-	/* Preparing to connect to the socket */
-	bzero ( (char *) &server, sizeof server );
-	server.sin_family = AF_INET;
-	if ( (hp = gethostbyname(host) ) == NULL) {
-		sprintf( buf, "%s: unknown host\n", host);
-		printf( buf );
-	}
-	
-	bcopy( hp->h_addr, &server.sin_addr, hp->h_length );
-	server.sin_port = htons( (u_short) port );
-
-	/* Try to connect */
-	if ( connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0 )
-		printf ("Connecting stream socket");
-
-	/* Determine what port client's using. */
-	clientLen = sizeof (client);
-	if ( getsockname (sock, (struct sockaddr *) &client, (socklen_t *)&clientLen))
-		printf ("Getting socket name");
-
-	if ( clientLen != sizeof(client))
-		printf ("getsockname() overwrote name structure");
-
-	printf ("Client socket has port %hu\n", ntohs(client.sin_port));
-
-	/* Write out message. */
-	if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
-		printf ( "Writing on stream socket" );
-
-	printf ("Sent...!");
 	// thread for handle_socket
 	// to read data on that socket
 

@@ -37,7 +37,7 @@ parse_config ( void ) {
 	int index;
 	for ( index = 0; index < MAX_NODES; index++ ) {
 		con_list[index].sock = 0;
-		//strncpy ( node_list[index].name, "localhost", sizeof ("localhost") );
+		strncpy ( node_list[index].name, "NULL", sizeof ("NULL") );
 	}
 	strncpy ( node_list[index].name, "net01", sizeof ("net01") );
 	strncpy ( node_list[index].name, "net02", sizeof ("net02") );
