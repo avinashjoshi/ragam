@@ -38,6 +38,8 @@ void
 	int sock;
 	pthread_t thread;
 	struct addrinfo hints, *res;
+	struct sockaddr_in server_address;
+	struct sockaddr_in client_address;
 	int reuseaddr = 1; // True
 	int port_int = (int) tport;
 	char port_str[10];
@@ -53,7 +55,7 @@ void
 	}
 
 	/* Create a socket */
-	sock = socket ( res->ai_family, res->ai_socktype, res->ai_protocol );
+	sock = socket ( AF_INET, SOCK_STREAM, 0 );
 	if ( sock == -1 ) {
 		perror ( "socket()");
 		return NULL;
@@ -65,20 +67,24 @@ void
 		return NULL;
 	}
 
-	printf ( "socket()" );
+	printf ( "socket()\n" );
 
 	/* Bind to sock address */
-	if ( bind ( sock, res->ai_addr, res->ai_addrlen ) == -1 ) {
+	server_address.sin_family = AF_INET;
+	server_address.sin_port = htons (port_int);
+	server_address.sin_addr.s_addr = INADDR_ANY;
+
+	printf("Server-Using %s and port %d...\n", inet_ntoa(server_address.sin_addr), port_int);
+
+	if ( bind ( sock, (struct sockaddr *) &server_address, sizeof (struct sockaddr) ) == -1 ) {
 		perror ( "bind()" );
 		return NULL;
 	}
 
-	printf ( "BOUND....\n" );
-
-	freeaddrinfo ( res );
+	printf ( "BOUND.... " );
 
 	/* Listen */
-	if ( listen ( sock, MAX_NODES ) == -1 ) {
+	if ( listen ( sock, 32 ) == -1 ) {
 		perror ( "listen()" );
 		return NULL;
 	}
@@ -86,9 +92,11 @@ void
 	/* Main loop begins here */
 	do {
 		// accept connection here
-		size_t size = sizeof ( struct sockaddr_in );
+		int size = sizeof ( struct sockaddr_in );
 		struct sockaddr_in their_addr;
+		printf ("Waiting in accept()\n");
 		int newsock = accept ( sock, ( struct sockaddr* ) &their_addr, &size );
+		printf ("---GOT ONE---\n");
 		if ( newsock == -1 ) {
 			perror ( "accept()");
 		}
@@ -151,9 +159,11 @@ setup_connect_to ( int port ) {
 	 */
 
 	for ( ; index_list < MAX_NODES; index_list++ ) {
+		
+		printf ( "Trying %s\n", node_list[index_list].name );
 
 		// Check if socket associated w/ host
-		if ( (sock = is_connected ( node_list[index_list].name )) > -1 ) {
+		if ( is_connected ( node_list[index_list].name ) > -1 ) {
 			/* Oops! looks like a socket is associated with that node */
 			printf ( "Already connected");
 			continue;
@@ -171,23 +181,31 @@ setup_connect_to ( int port ) {
 		// Create a TCP conection to the port
 		/* Opening a socket */
 		if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
-			printf ( "Error in opening socket()\n");
+			perror ( "socket()");
 		}
 
 		/* Preparing to connect to the socket */
-		bzero ( (char *) &server, sizeof server );
-		server.sin_family = AF_INET;
-		if ( (hp = gethostbyname(host) ) == NULL) {
+		if ( (hp = gethostbyname(node_list[index_list].name) ) == NULL) {
 			sprintf( buf, "%s: unknown host\n", host);
 			printf( buf );
 		}
 
-		bcopy( hp->h_addr, &server.sin_addr, hp->h_length );
-		server.sin_port = htons( (u_short) port );
+		printf("The host name is: %s\n", hp->h_name);
+		printf("The IP Address is: %s\n", inet_ntoa(*((struct in_addr *)hp->h_addr)));
+
+		bzero ( (char *) &server, sizeof server );
+		server.sin_family = AF_INET;
+		server.sin_port = htons( port );
+		server.sin_addr = *((struct in_addr *) hp->h_addr);
+
+		//zero the rest of the struct
+		memset(&(server.sin_zero), '\0', 8);
+
+		//memset ( hp->h_addr, &server.sin_addr, hp->h_length );
 
 		/* Try to connect */
-		if ( connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0 ) {
-			printf ("Error: Connecting stream socket");
+		if ( connect(sock, (struct sockaddr *) &server, sizeof(struct sockaddr)) < 0 ) {
+			perror ("connect()");
 			continue;
 		}
 

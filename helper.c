@@ -39,8 +39,8 @@ parse_config ( void ) {
 		con_list[index].sock = 0;
 		strncpy ( node_list[index].name, "NULL", sizeof ("NULL") );
 	}
-	strncpy ( node_list[index].name, "net01", sizeof ("net01.utdallas.edu") );
-	strncpy ( node_list[index].name, "net02", sizeof ("net02.utdallas.edu") );
+	strncpy ( node_list[0].name, "net01.utdallas.edu", sizeof ("net01.utdallas.edu") );
+	strncpy ( node_list[1].name, "net02.utdallas.edu", sizeof ("net02.utdallas.edu") );
 }
 
 /*

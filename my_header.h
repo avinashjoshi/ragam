@@ -8,7 +8,7 @@
  * for different nodes
  * (Usefule while testing on local)
  */
-#define LISTEN_PORT 31337
+#define LISTEN_PORT 1337
 
 #define MAX_NODES 2
 
