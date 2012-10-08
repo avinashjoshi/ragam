@@ -10,13 +10,16 @@
  */
 #define LISTEN_PORT 1337
 
-#define MAX_NODES 2
+#define MAX_NODES 3
 
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0
 
 #define TRUE 1
 #define FALSE 0
+
+#define CONFIG_FILE "config"
+#define HOST_SIZE 30
 
 /*
  * Comment the below line if you
@@ -38,11 +41,11 @@
 /* Global connection list variable */
 struct node {
 	int sock;
-	char name[20];
+	char name[HOST_SIZE];
 } con_list [ MAX_NODES ];
 
 struct nodelist {
-	char name[20];
+	char name[HOST_SIZE];
 } node_list [ MAX_NODES ];
 
 /* Function declerations */

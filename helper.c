@@ -8,6 +8,8 @@
  */
 
 #include "my_header.h"
+#include <netdb.h>
+#include <netinet/in.h>
 
 /*
  * get_program_name takes string as input
@@ -30,17 +32,47 @@ get_program_name ( char argv[] ) {
 }
 
 /*
+ * Returns the IP address of host
+void
+get_host_ip ( char *hostname ) {
+	he = gethostbyname (hostname);
+	return; 
+}
+ */
+
+/*
  * parse config file...
  */
 void
 parse_config ( void ) {
-	int index;
+	struct hostent *he;
+	int index = 0;
 	for ( index = 0; index < MAX_NODES; index++ ) {
-		con_list[index].sock = 0;
+		con_list[index].sock = -1;
 		strncpy ( node_list[index].name, "NULL", sizeof ("NULL") );
 	}
-	strncpy ( node_list[0].name, "net01.utdallas.edu", sizeof ("net01.utdallas.edu") );
-	strncpy ( node_list[1].name, "net02.utdallas.edu", sizeof ("net02.utdallas.edu") );
+	FILE *file;
+	file = fopen ( CONFIG_FILE, "r" );
+	index = 0;
+	char *c;
+	if ( file != NULL ) {
+		char line[HOST_SIZE];
+		while ( index < MAX_NODES ) {
+			if ( fgets ( line, sizeof line, file ) == NULL )
+				break;
+			c = strchr (line, '\n');
+			if (c)
+				*c = 0;
+			/* Get host name */
+			he = gethostbyname ( line );
+			printf ("%d: %s %s - %d\n", index, line, he->h_name, sizeof (he->h_name));
+			strcpy ( node_list[index].name, he->h_name );
+			index++;
+		}
+		fclose (file);
+	} else {
+		perror ( CONFIG_FILE );
+	}
 }
 
 /*
@@ -72,7 +104,11 @@ add_to_conlist ( char *host, int sock ) {
 	// START MUTEX
 	int i = 0;
 	for ( ; i < MAX_NODES; i++ ) {
+		if ( con_list[i].sock == -1 )
+			break;
 	}
+	con_list[i].sock = sock;
+	strncpy ( con_list[i].name, host, sizeof (host) );
 	// END MUTEX
-	return -1;
+	return i;
 }
