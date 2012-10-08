@@ -10,7 +10,7 @@
  */
 #define LISTEN_PORT 1337
 
-#define MAX_NODES 5
+#define MAX_NODES 3
 
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0
@@ -39,6 +39,7 @@
 #endif
 
 pthread_mutex_t lock;
+pthread_mutex_t accept_lock; // To have MUTEX on accept and connect
 
 /* Global connection list variable */
 struct node {
@@ -62,3 +63,5 @@ int is_connected ( char *);
 void print_con_list ( void );
 
 int all_connected ( void );
+
+char* get_node_name_from_socket ( int );

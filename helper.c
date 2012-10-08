@@ -84,7 +84,6 @@ is_connected ( char *node) {
 	for ( ; index < MAX_NODES; index++ ) {
 		if ( strcasecmp ( con_list[index].name, node ) == 0 ) {
 			if ( con_list[index].status == TRUE ) {
-				printf ("====> Yep connected to %s,%d:", con_list[index].name, con_list[index].sock);
 				flag = TRUE;
 				break;
 			}
@@ -148,4 +147,14 @@ all_connected ( void ) {
 		return FALSE;
 	else
 		return TRUE;
+}
+
+char *
+get_node_name_from_socket ( int sock ) {
+	int i = 0;
+	for ( ; i < MAX_NODES; i++ ) {
+		if ( sock == con_list[i].sock )
+			break;
+	}
+	return con_list[i].name;
 }

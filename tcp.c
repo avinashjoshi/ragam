@@ -22,7 +22,7 @@
 void
 *handle_socket ( void *new_sock ) {
 	int sock = (int) new_sock;
-	fprintf ( stdout, "Yahoo! got a new connection\n" );
+	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
 	close (sock);
 	return NULL;
 }
@@ -34,7 +34,8 @@ void
 void
 *handle_listen ( void *tport ) {
 
-	int nodes_index = 0;
+	pthread_mutex_lock (&lock);
+
 	int sock;
 	char hostname[MAX_HOST_LEN];
 	pthread_t thread;
@@ -54,6 +55,7 @@ void
 	hints.ai_socktype = SOCK_STREAM;
 	if ( getaddrinfo ( NULL, port_str, &hints, &res ) != 0 ) {
 		printf ( "getaddrinfo()" );
+		pthread_mutex_unlock (&lock);
 		return NULL;
 	}
 
@@ -61,12 +63,14 @@ void
 	sock = socket ( AF_INET, SOCK_STREAM, 0 );
 	if ( sock == -1 ) {
 		perror ( "socket()");
+		pthread_mutex_unlock (&lock);
 		return NULL;
 	}
 
 	/* Enable the socket to reuse address */
 	if ( setsockopt ( sock, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(int) ) == -1 ) {
 		perror ( "setsockopt()" );
+		pthread_mutex_unlock (&lock);
 		return NULL;
 	}
 
@@ -81,10 +85,10 @@ void
 
 	if ( bind ( sock, (struct sockaddr *) &server_address, sizeof (struct sockaddr) ) == -1 ) {
 		perror ( "bind()" );
+		pthread_mutex_unlock (&lock);
 		return NULL;
 	}
 
-	pthread_mutex_lock (&lock);
 	add_to_conlist (hostname, sock);
 	pthread_mutex_unlock (&lock);
 	printf ( "BOUND.... " );
@@ -105,37 +109,39 @@ void
 		struct sockaddr_in their_addr;
 		printf ("Waiting in accept()\n");
 		int newsock = accept ( sock, ( struct sockaddr* ) &their_addr, &size );
+		pthread_mutex_lock (&lock);
 		if ( newsock == -1 ) {
 			perror ( "accept()");
+			pthread_mutex_unlock (&lock);
+			continue;
 		} else {
-			DBG (( "\nReceived connection from %s on port %d\n", inet_ntoa(their_addr.sin_addr), htons(their_addr.sin_port)));
+			DBG (( "\nReceived connection from %s on socket %d\n", inet_ntoa(their_addr.sin_addr), newsock ));
 			inet_pton(AF_INET, inet_ntoa(their_addr.sin_addr), &ipv4addr);
 			he = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
 			printf ("\nADDING %s TO CON_LIST\n", he->h_name);
-			/*
-			pthread_mutex_lock (&lock);
+
 			if ( is_connected(he->h_name) > -1 ) {
 				printf ("Server -- already connected");
-				nodes_index++;
 				pthread_mutex_unlock (&lock);
 				continue;
 			}
-			pthread_mutex_unlock (&lock);
-			*/
-			nodes_index++;
-			if ( pthread_create ( &thread, NULL, handle_socket, &newsock) != 0 ) {
+
+			if ( pthread_create ( &thread, NULL, handle_socket, newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );
+				pthread_mutex_unlock (&lock);
 				continue;
 			} else {
-				/*
-				pthread_mutex_lock (&lock);
 				add_to_conlist (he->h_name, newsock);
-				nodes_index ++;
 				pthread_mutex_unlock (&lock);
-				*/
 			}
 		}
-	} while ( nodes_index < MAX_NODES );
+		pthread_mutex_lock (&lock);
+		if ( all_connected() ) {
+			pthread_mutex_unlock (&lock);
+			break;
+		}
+		pthread_mutex_unlock (&lock);
+	} while ( 1 );
 	//printf ( "Closing sockets....\n");
 	//close ( sock );
 	pthread_exit ( NULL );
@@ -209,15 +215,6 @@ setup_connect_to ( int port ) {
 			}
 			// MUTEX
 
-			// Looks like host not in con_list
-			// Create a TCP conection to the port
-			/* Opening a socket */
-			if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
-				perror ( "socket()");
-				pthread_mutex_unlock(&lock);
-				continue;
-			}
-
 			/* Preparing to connect to the socket */
 			if ( (hp = gethostbyname(con_list[index_list].name) ) == NULL) {
 				sprintf( buf, "%s: unknown host\n", host);
@@ -234,7 +231,14 @@ setup_connect_to ( int port ) {
 			//zero the rest of the struct
 			memset(&(server.sin_zero), '\0', 8);
 
-			//memset ( hp->h_addr, &server.sin_addr, hp->h_length );
+			// Looks like host not in con_list
+			// Create a TCP conection to the port
+			/* Opening a socket */
+			if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
+				perror ( "socket()");
+				pthread_mutex_unlock(&lock);
+				continue;
+			}
 
 			/* Try to connect */
 			if ( connect(sock, (struct sockaddr *) &server, sizeof(struct sockaddr)) < 0 ) {
@@ -252,24 +256,27 @@ setup_connect_to ( int port ) {
 			pthread_mutex_unlock(&lock);
 
 			/* Determine what port client's using. */
-			clientLen = sizeof (client);
-			if ( getsockname (sock, (struct sockaddr *) &client, (socklen_t *)&clientLen)) {
-				printf ("Getting socket name");
-				close(sock);
-				continue;
-			}
+			/*
+			   clientLen = sizeof (client);
+			   if ( getsockname (sock, (struct sockaddr *) &client, (socklen_t *)&clientLen)) {
+			   printf ("Getting socket name");
+			   close(sock);
+			   continue;
+			   }
 
-			if ( clientLen != sizeof(client)) {
-				printf ("getsockname() overwrote name structure");
-				close(sock);
-				continue;
-			}
+			   if ( clientLen != sizeof(client)) {
+			   printf ("getsockname() overwrote name structure");
+			   close(sock);
+			   continue;
+			   }
 
-			printf ("Client socket has port %hu\n", ntohs(client.sin_port));
+			   printf ("Client socket has port %hu\n", ntohs(client.sin_port));
+			   */
 
-			/* Write out message. */
-			if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
-				printf ( "Writing on stream socket" );
+			/* Write out message. 
+			   if ( send ( sock, "connect", sizeof ("connect"), 0 ) < 0 )
+			   printf ( "Writing on stream socket" );
+			   */
 
 			conn_count++;
 		} //end for()
