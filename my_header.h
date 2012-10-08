@@ -10,7 +10,7 @@
  */
 #define LISTEN_PORT 1337
 
-#define MAX_NODES 3
+#define MAX_NODES 5
 
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0
@@ -38,15 +38,14 @@
 	#define PATH_SEPARATOR '/'
 #endif
 
+pthread_mutex_t lock;
+
 /* Global connection list variable */
 struct node {
 	int sock;
 	char name[HOST_SIZE];
+	int status;
 } con_list [ MAX_NODES ];
-
-struct nodelist {
-	char name[HOST_SIZE];
-} node_list [ MAX_NODES ];
 
 /* Function declerations */
 
@@ -59,3 +58,7 @@ void parse_config ( void );
 void setup_connect_to ( int );
 
 int is_connected ( char *);
+
+void print_con_list ( void );
+
+int all_connected ( void );

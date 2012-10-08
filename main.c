@@ -48,6 +48,7 @@ main ( int argc, char *argv[] ) {
 	fprintf ( stdout, "Waiting for scanf...." );
 	int a;
 	scanf ( "%d", &a );
+	print_con_list();
 
 	// Have to write the initial connection code here
 
