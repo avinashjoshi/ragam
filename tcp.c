@@ -21,8 +21,16 @@
  */
 void
 *handle_socket ( void *new_sock ) {
+	char buffer[BUFF_SIZE];
 	int sock = (int) new_sock;
 	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
+	sprintf(buffer, "REQUEST|0|host");
+	send ( sock, buffer, BUFF_SIZE, 0);
+	while ( 1 ) {
+		bzero ( buffer, BUFF_SIZE);
+		recv (sock, buffer, BUFF_SIZE, 0);
+		fprintf (stdout, "Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+	}
 	close (sock);
 	return NULL;
 }
@@ -175,6 +183,7 @@ setup_connect_to ( int port ) {
 	int index_list = 0;
 	char host[MAX_HOST_LEN];
 	int sock;
+	pthread_t thread;
 	struct sockaddr_in server;   /* Socket info. for server */
 	struct sockaddr_in client;   /* Socket info. about us */
 	int clientLen;   /* Length of client socket struct. */
@@ -250,6 +259,10 @@ setup_connect_to ( int port ) {
 				printf ("Connected!");
 				// Add to con_list
 				// MUTEX
+				if ( pthread_create ( &thread, NULL, handle_socket, sock) != 0 ) {
+					pthread_mutex_unlock(&lock);
+					continue;
+				}
 				add_to_conlist (con_list[index_list].name, sock);
 				// MUTEX
 			}

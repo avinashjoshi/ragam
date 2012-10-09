@@ -39,7 +39,6 @@
 #endif
 
 pthread_mutex_t lock;
-pthread_mutex_t accept_lock; // To have MUTEX on accept and connect
 
 /* Global connection list variable */
 struct node {
@@ -47,6 +46,12 @@ struct node {
 	char name[HOST_SIZE];
 	int status;
 } con_list [ MAX_NODES ];
+
+/* Linked List for algorithm */
+struct queue {
+	char name[HOST_SIZE];
+	struct queue *next;
+} root;
 
 /* Function declerations */
 
