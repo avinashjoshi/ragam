@@ -158,3 +158,12 @@ get_node_name_from_socket ( int sock ) {
 	}
 	return con_list[i].name;
 }
+
+int get_node_index ( char *hostname) {
+	int i = 0;
+	for ( ; i < MAX_NODES; i++ ) {
+		if ( strcasecmp ( con_list[i].name, hostname) == 0 )
+			break;
+	}
+	return i;
+}

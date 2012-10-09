@@ -3,12 +3,6 @@
 
 const char *prog_name;
 
-void
-*main_thread ( void *port ) {
-	fprintf ( stderr, "Wola! You are in thread, port = %d", (int) port);
-	pthread_exit ( NULL );
-}
-
 int
 main ( int argc, char *argv[] ) {
 
@@ -45,6 +39,21 @@ main ( int argc, char *argv[] ) {
 	 * we will connect to all other clints...
 	 */
 	setup_connect_to ( port );
+
+	/*
+	 * start_compute() starts the main computation
+	 * like sending the first REQUEST
+	 */
+	start_compute();
+
+	/*
+	 * Closing all sockets before quiting program
+	int i;
+	for ( i = 0; i < MAX_NODES; i++ ) {
+		close ( con_list[i].sock );
+	}
+	 */
+
 	fprintf ( stdout, "Waiting for scanf...." );
 	int a;
 	scanf ( "%d", &a );

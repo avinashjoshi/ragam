@@ -9,8 +9,9 @@
  * (Usefule while testing on local)
  */
 #define LISTEN_PORT 1337
-
 #define MAX_NODES 3
+#define BUFF_SIZE 1024
+#define MAX_HOST_LEN 100
 
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0
@@ -51,7 +52,7 @@ struct node {
 struct queue {
 	char name[HOST_SIZE];
 	struct queue *next;
-} root;
+} *root;
 
 /* Function declerations */
 
@@ -70,3 +71,7 @@ void print_con_list ( void );
 int all_connected ( void );
 
 char* get_node_name_from_socket ( int );
+
+int get_node_index ( char *);
+
+void start_compute ( void );

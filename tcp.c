@@ -13,19 +13,20 @@
 #include <netdb.h>
 #include <unistd.h>
 
-#define BUFF_SIZE 1024
-#define MAX_HOST_LEN 100
-
 /*
  * Handles new socket after accept
  */
 void
 *handle_socket ( void *new_sock ) {
 	char buffer[BUFF_SIZE];
+	char hostname[MAX_HOST_LEN];
 	int sock = (int) new_sock;
+	gethostname(hostname, sizeof hostname );;
+	int timestamp = get_node_index (hostname );
+	int node_number = timestamp;
 	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
-	sprintf(buffer, "REQUEST|0|host");
-	send ( sock, buffer, BUFF_SIZE, 0);
+	sprintf(buffer, "REQUEST|%d|%d", timestamp, node_number);
+	//send ( sock, buffer, BUFF_SIZE, 0);
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);
