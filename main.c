@@ -28,6 +28,8 @@ main ( int argc, char *argv[] ) {
 
 	parse_config ();
 
+	root = NULL;
+
 	/*
 	 * Setup listen threads that will 
 	 * allow other nodes talk to me
@@ -39,6 +41,15 @@ main ( int argc, char *argv[] ) {
 	 * we will connect to all other clints...
 	 */
 	setup_connect_to ( port );
+
+	/*
+	 * Start handle_request thread
+	 */
+	pthread_t thread;
+	if ( pthread_create ( &thread, NULL, handle_receive, (void *) NULL ) != 0 ) {
+		fprintf ( stderr, "Oops! Could not fork handle_request() thread\n");
+		exit (EXIT_FAILURE);
+	}
 
 	/*
 	 * start_compute() starts the main computation

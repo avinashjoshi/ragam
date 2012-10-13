@@ -29,7 +29,7 @@ void
 	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
 	sprintf(buffer, "REQUEST|%d|%d", timestamp, node_number);
 	sprintf(filename, "output/%d", node_number);
-	fp = fopen ( filename, "a" );
+	//fp = fopen ( filename, "a" );
 	//send ( sock, buffer, BUFF_SIZE, 0);
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
@@ -37,11 +37,11 @@ void
 		if ( strcasecmp (buffer, "" ) == 0 ) {
 			break;
 		}
-		fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		//fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		fprintf (stdout, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		bzero ( buffer, BUFF_SIZE);
 	}
-	fclose (fp);
+	//fclose (fp);
 	close (sock);
 	return NULL;
 }

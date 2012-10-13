@@ -9,7 +9,7 @@
  * (Usefule while testing on local)
  */
 #define LISTEN_PORT 1337
-#define MAX_NODES 10
+#define MAX_NODES 3
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
 
@@ -52,9 +52,11 @@ struct node {
 } con_list [ MAX_NODES ];
 
 /* Linked List for algorithm */
-struct queue {
-	char name[HOST_SIZE];
-	struct queue *next;
+typedef struct linked_list queue;
+struct linked_list {
+	int node_number;
+	int timestamp;
+	queue *next;
 } *root;
 
 /* Function declerations */
@@ -80,3 +82,13 @@ int get_node_index ( char *);
 void start_compute ( void );
 
 int add_to_conlist ( char *, int );
+
+void *handle_receive ( void * );
+
+/*
+ * All function def. for queue
+ */
+queue* remove_queue ( void );
+int is_queue_empty ( void );
+void insert_queue ( int, int );
+void print_queue ( void );
