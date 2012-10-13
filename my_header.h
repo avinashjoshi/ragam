@@ -13,6 +13,9 @@
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
 
+#define REQUEST 0
+#define REPLY 1
+
 #define RETURN_FAILURE 1
 #define RETURN_SUCCESS 0
 

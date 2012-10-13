@@ -31,6 +31,7 @@ void
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);
 		fprintf (stdout, "Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		bzero ( buffer, BUFF_SIZE);
 	}
 	close (sock);
 	return NULL;
@@ -50,7 +51,6 @@ void
 	pthread_t thread;
 	struct addrinfo hints, *res;
 	struct sockaddr_in server_address;
-	struct sockaddr_in client_address;
 	int reuseaddr = 1; // True
 	int port_int = (int) tport;
 	char port_str[10];
@@ -186,8 +186,6 @@ setup_connect_to ( int port ) {
 	int sock;
 	pthread_t thread;
 	struct sockaddr_in server;   /* Socket info. for server */
-	struct sockaddr_in client;   /* Socket info. about us */
-	int clientLen;   /* Length of client socket struct. */
 	struct hostent *hp;   /* Return value from gethostbyname() */
 	char buf[BUFF_SIZE];   /* Received data buffer */
 	int conn_count = 0;
