@@ -16,7 +16,7 @@ start_compute ( void ) {
 	int timestamp = node_number;
 	int i;
 	sprintf ( buffer, "%d|%d|%d", REQUEST, timestamp, node_number );
-	while ( all_connected() == FALSE );
+	//while ( all_connected() == FALSE );
 	for ( i = 0; i < MAX_NODES; i++ ) {
 		if ( strcasecmp ( hostname, con_list[i].name ) == 0 ) {
 			continue;

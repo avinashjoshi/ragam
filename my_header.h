@@ -9,7 +9,7 @@
  * (Usefule while testing on local)
  */
 #define LISTEN_PORT 1337
-#define MAX_NODES 3
+#define MAX_NODES 10
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
 
@@ -78,3 +78,5 @@ char* get_node_name_from_socket ( int );
 int get_node_index ( char *);
 
 void start_compute ( void );
+
+int add_to_conlist ( char *, int );

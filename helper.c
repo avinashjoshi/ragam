@@ -61,7 +61,7 @@ parse_config ( void ) {
 				*c = 0;
 			/* Get host name */
 			he = gethostbyname ( line );
-			printf ("%d: %s %s - %d\n", index, line, he->h_name, sizeof (he->h_name));
+			printf ("%d: %s %s - %ld\n", index, line, he->h_name, sizeof (he->h_name));
 			con_list[index].sock = -1;
 			strcpy ( con_list[index].name, he->h_name );
 			con_list[index].status = FALSE;

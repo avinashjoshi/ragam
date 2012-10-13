@@ -18,21 +18,30 @@
  */
 void
 *handle_socket ( void *new_sock ) {
+	FILE *fp;
 	char buffer[BUFF_SIZE];
+	char filename[50];
 	char hostname[MAX_HOST_LEN];
-	int sock = (int) new_sock;
+	int sock = (long int) new_sock;
 	gethostname(hostname, sizeof hostname );;
 	int timestamp = get_node_index (hostname );
 	int node_number = timestamp;
 	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
 	sprintf(buffer, "REQUEST|%d|%d", timestamp, node_number);
+	sprintf(filename, "output/%d", node_number);
+	fp = fopen ( filename, "a" );
 	//send ( sock, buffer, BUFF_SIZE, 0);
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);
-		fprintf (stdout, "Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		if ( strcasecmp (buffer, "" ) == 0 ) {
+			break;
+		}
+		fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		fprintf (stdout, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		bzero ( buffer, BUFF_SIZE);
 	}
+	fclose (fp);
 	close (sock);
 	return NULL;
 }
@@ -52,7 +61,7 @@ void
 	struct addrinfo hints, *res;
 	struct sockaddr_in server_address;
 	int reuseaddr = 1; // True
-	int port_int = (int) tport;
+	int port_int = (long int) tport;
 	char port_str[10];
 	snprintf ( port_str, sizeof port_str, "%d", port_int );
 
@@ -114,7 +123,7 @@ void
 	/* Main loop begins here */
 	do {
 		// accept connection here
-		int size = sizeof ( struct sockaddr_in );
+		socklen_t size = sizeof ( struct sockaddr_in );
 		struct sockaddr_in their_addr;
 		printf ("Waiting in accept()\n");
 		int newsock = accept ( sock, ( struct sockaddr* ) &their_addr, &size );
@@ -135,7 +144,7 @@ void
 				continue;
 			}
 
-			if ( pthread_create ( &thread, NULL, handle_socket, newsock) != 0 ) {
+			if ( pthread_create ( &thread, NULL, handle_socket, (void *) newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );
 				pthread_mutex_unlock (&lock);
 				continue;
@@ -165,7 +174,7 @@ setup_listen_thread ( int port ) {
 
 	DBG (("creating thread..."));
 
-	err = pthread_create ( &tcp_pid, NULL, &handle_listen, (void *) port );
+	err = pthread_create ( &tcp_pid, NULL, handle_listen, (void *) port );
 
 	if ( err != 0 )
 		fprintf ( stderr, "Unable to create thread :(\n");
@@ -258,7 +267,7 @@ setup_connect_to ( int port ) {
 				printf ("Connected!");
 				// Add to con_list
 				// MUTEX
-				if ( pthread_create ( &thread, NULL, handle_socket, sock) != 0 ) {
+				if ( pthread_create ( &thread, NULL, handle_socket, (void *) sock) != 0 ) {
 					pthread_mutex_unlock(&lock);
 					continue;
 				}
