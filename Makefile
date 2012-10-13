@@ -1,5 +1,5 @@
 CC := gcc
-OBJECTS := main.o helper.o tcp.o compute.o handle_receive.o queue.o
+OBJECTS := main.o helper.o tcp.o compute.o handle_receive.o r_queue.o d_queue.o
 
 #%.o: %.c
 #	$(CC) -c -o $@ $< $(LDFLAGS)

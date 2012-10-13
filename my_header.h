@@ -43,6 +43,13 @@
 #endif
 
 pthread_mutex_t lock;
+pthread_mutex_t r_lock;
+pthread_mutex_t q_lock;
+
+pthread_mutex_t requesting_lock;
+pthread_mutex_t critical_lock;
+
+int is_in_critical, is_requesting;
 
 /* Global connection list variable */
 struct node {
@@ -52,12 +59,25 @@ struct node {
 } con_list [ MAX_NODES ];
 
 /* Linked List for algorithm */
-typedef struct linked_list queue;
-struct linked_list {
+/*
+ * Deferred queue list
+ */
+typedef struct d_linked_list d_queue;
+struct d_linked_list {
 	int node_number;
 	int timestamp;
-	queue *next;
-} *root;
+	d_queue *next;
+} *d_q;
+
+/*
+ * This holds all requests 
+ * coming into socket
+ */
+typedef struct r_linked_list r_queue;
+struct r_linked_list {
+	char data[BUFF_SIZE];
+	r_queue *next;
+} *r_q;
 
 /* Function declerations */
 
@@ -88,7 +108,12 @@ void *handle_receive ( void * );
 /*
  * All function def. for queue
  */
-queue* remove_queue ( void );
-int is_queue_empty ( void );
-void insert_queue ( int, int );
-void print_queue ( void );
+r_queue* remove_r_queue ( void );
+int is_r_queue_empty ( void );
+void insert_r_queue ( char * );
+void print_r_queue ( void );
+
+d_queue* remove_d_queue ( void );
+int is_d_queue_empty ( void );
+void insert_d_queue ( int, int );
+void print_d_queue ( void );

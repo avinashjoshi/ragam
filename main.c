@@ -28,7 +28,9 @@ main ( int argc, char *argv[] ) {
 
 	parse_config ();
 
-	root = NULL;
+	d_q = r_q = NULL;
+	is_in_critical = FALSE;
+	is_requesting = FALSE;
 
 	/*
 	 * Setup listen threads that will 
@@ -69,6 +71,8 @@ main ( int argc, char *argv[] ) {
 	int a;
 	scanf ( "%d", &a );
 	print_con_list();
+	printf ("\nREQUEST QUEUE\n");
+	print_r_queue ();
 
 	// Have to write the initial connection code here
 

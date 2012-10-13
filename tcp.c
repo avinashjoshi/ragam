@@ -38,7 +38,10 @@ void
 			break;
 		}
 		//fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
-		fprintf (stdout, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		pthread_mutex_lock ( &q_lock );
+		insert_r_queue ( buffer );
+		pthread_mutex_unlock ( &q_lock );
+		//fprintf (stdout, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		bzero ( buffer, BUFF_SIZE);
 	}
 	//fclose (fp);
