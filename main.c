@@ -31,6 +31,10 @@ main ( int argc, char *argv[] ) {
 	d_q = r_q = NULL;
 	is_in_critical = FALSE;
 	is_requesting = FALSE;
+	total_requests = 0;
+
+	gethostname ( hostname, sizeof hostname);
+	node_number = get_node_index ( hostname );
 
 	/*
 	 * Setup listen threads that will 
@@ -73,6 +77,8 @@ main ( int argc, char *argv[] ) {
 	print_con_list();
 	printf ("\nREQUEST QUEUE\n");
 	print_r_queue ();
+	printf ("\nDEFERRED QUEUE\n");
+	print_d_queue ();
 
 	// Have to write the initial connection code here
 

@@ -9,7 +9,7 @@
  * (Usefule while testing on local)
  */
 #define LISTEN_PORT 1337
-#define MAX_NODES 3
+#define MAX_NODES 5
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
 
@@ -50,6 +50,10 @@ pthread_mutex_t requesting_lock;
 pthread_mutex_t critical_lock;
 
 int is_in_critical, is_requesting;
+int request_ts, total_requests;
+
+int node_number;
+char hostname[MAX_HOST_LEN];
 
 /* Global connection list variable */
 struct node {
