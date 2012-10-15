@@ -32,13 +32,14 @@ void
 			break;
 		}
 		//fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		fprintf (stdout, "INSERTED into REQ_Q -- %s: %s\n", buffer, get_node_name_from_socket (sock));
+		pthread_mutex_lock ( &analysis_lock );
+		total_messages++;
+		pthread_mutex_unlock ( &analysis_lock );
 		pthread_mutex_lock ( &q_lock );
-		pthread_mutex_lock ( &ts_lock );
 		insert_r_queue ( buffer );
 		//global_ts++;
 		pthread_mutex_unlock ( &q_lock );
-		pthread_mutex_unlock ( &ts_lock );
-		fprintf (stdout, "INSERTED into REQ_Q -- %s: %s\n", buffer, get_node_name_from_socket (sock));
 		bzero ( buffer, BUFF_SIZE);
 	}
 	//fclose (fp);

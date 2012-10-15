@@ -36,6 +36,7 @@ main ( int argc, char *argv[] ) {
 	is_in_critical = FALSE;
 	is_requesting = FALSE;
 	total_requests = 0;
+	total_messages = 0;
 
 	/*
 	 * Get hostname for this node
@@ -94,6 +95,8 @@ main ( int argc, char *argv[] ) {
 	print_r_queue ();
 	printf ("\nDEFERRED QUEUE\n");
 	print_d_queue ();
+	printf ("\nAnalysis\n====================================\n");
+	printf ("Total # messages exchanged: %d\n");
 
 	// Have to write the initial connection code here
 

@@ -8,7 +8,7 @@
  * for different nodes
  * (Usefule while testing on local)
  */
-#define LISTEN_PORT 31337
+#define LISTEN_PORT 56744
 #define MAX_NODES 4
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
@@ -50,9 +50,13 @@ pthread_mutex_t ts_lock;
 pthread_mutex_t requesting_lock;
 pthread_mutex_t critical_lock;
 
+pthread_mutex_t analysis_lock;
+
 int is_in_critical, is_requesting;
 int request_ts, total_requests;
 int global_ts;
+
+int total_messages;
 
 int node_number;
 char hostname[MAX_HOST_LEN];
