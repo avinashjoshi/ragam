@@ -28,13 +28,28 @@ main ( int argc, char *argv[] ) {
 
 	parse_config ();
 
+	/* 
+	 * Setting defer and request 
+	 * to NULL
+	 */
 	d_q = r_q = NULL;
 	is_in_critical = FALSE;
 	is_requesting = FALSE;
 	total_requests = 0;
 
+	/*
+	 * Get hostname for this node
+	 * and index in con_list[]
+	 */
 	gethostname ( hostname, sizeof hostname);
 	node_number = get_node_index ( hostname );
+
+	/*
+	 * Timestamp is the node number
+	 * to eliminate same timestamp requests
+	 */
+	int timestamp = node_number;
+	global_ts = timestamp;
 
 	/*
 	 * Setup listen threads that will 

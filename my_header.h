@@ -8,8 +8,8 @@
  * for different nodes
  * (Usefule while testing on local)
  */
-#define LISTEN_PORT 1337
-#define MAX_NODES 5
+#define LISTEN_PORT 31337
+#define MAX_NODES 4
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
 
@@ -29,7 +29,7 @@
  * Comment the below line if you
  * want to disable debug mode
  */
-#define _DEBUG_
+//#define _DEBUG_
 
 #ifdef _DEBUG_
 	#define DBG(x)  printf ("\n_DEBUG: "); printf x; printf("\n");
@@ -43,14 +43,16 @@
 #endif
 
 pthread_mutex_t lock;
-pthread_mutex_t r_lock;
+pthread_mutex_t dq_lock;
 pthread_mutex_t q_lock;
+pthread_mutex_t ts_lock;
 
 pthread_mutex_t requesting_lock;
 pthread_mutex_t critical_lock;
 
 int is_in_critical, is_requesting;
 int request_ts, total_requests;
+int global_ts;
 
 int node_number;
 char hostname[MAX_HOST_LEN];

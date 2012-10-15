@@ -21,16 +21,10 @@ void
 	FILE *fp;
 	char buffer[BUFF_SIZE];
 	char filename[50];
-	char hostname[MAX_HOST_LEN];
 	int sock = (long int) new_sock;
-	gethostname(hostname, sizeof hostname );;
-	int timestamp = get_node_index (hostname );
-	int node_number = timestamp;
-	fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
-	sprintf(buffer, "REQUEST|%d|%d", timestamp, node_number);
-	sprintf(filename, "output/%d", node_number);
+	//fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
+	//sprintf(filename, "output/%d", node_number);
 	//fp = fopen ( filename, "a" );
-	//send ( sock, buffer, BUFF_SIZE, 0);
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);
@@ -39,9 +33,12 @@ void
 		}
 		//fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		pthread_mutex_lock ( &q_lock );
+		pthread_mutex_lock ( &ts_lock );
 		insert_r_queue ( buffer );
+		//global_ts++;
 		pthread_mutex_unlock ( &q_lock );
-		//fprintf (stdout, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
+		pthread_mutex_unlock ( &ts_lock );
+		fprintf (stdout, "INSERTED into REQ_Q -- %s: %s\n", buffer, get_node_name_from_socket (sock));
 		bzero ( buffer, BUFF_SIZE);
 	}
 	//fclose (fp);
@@ -59,7 +56,6 @@ void
 	pthread_mutex_lock (&lock);
 
 	int sock;
-	char hostname[MAX_HOST_LEN];
 	pthread_t thread;
 	struct addrinfo hints, *res;
 	struct sockaddr_in server_address;
@@ -68,7 +64,6 @@ void
 	char port_str[10];
 	snprintf ( port_str, sizeof port_str, "%d", port_int );
 
-	gethostname ( hostname, sizeof hostname );
 
 	/* Get address info */
 	memset ( &hints, 0, sizeof hints );
@@ -95,14 +90,14 @@ void
 		return NULL;
 	}
 
-	printf ( "socket()\n" );
+	//printf ( "socket()\n" );
 
 	/* Bind to sock address */
 	server_address.sin_family = AF_INET;
 	server_address.sin_port = htons (port_int);
 	server_address.sin_addr.s_addr = INADDR_ANY;
 
-	printf("Server-Using %s and port %d...\n", inet_ntoa(server_address.sin_addr), port_int);
+	//printf("Server-Using %s and port %d...\n", inet_ntoa(server_address.sin_addr), port_int);
 
 	if ( bind ( sock, (struct sockaddr *) &server_address, sizeof (struct sockaddr) ) == -1 ) {
 		perror ( "bind()" );
@@ -112,7 +107,7 @@ void
 
 	add_to_conlist (hostname, sock);
 	pthread_mutex_unlock (&lock);
-	printf ( "BOUND.... " );
+	//printf ( "BOUND.... " );
 
 	/* Listen */
 	if ( listen ( sock, 32 ) == -1 ) {
@@ -128,7 +123,7 @@ void
 		// accept connection here
 		socklen_t size = sizeof ( struct sockaddr_in );
 		struct sockaddr_in their_addr;
-		printf ("Waiting in accept()\n");
+		//printf ("Waiting in accept()\n");
 		int newsock = accept ( sock, ( struct sockaddr* ) &their_addr, &size );
 		pthread_mutex_lock (&lock);
 		if ( newsock == -1 ) {
@@ -139,10 +134,10 @@ void
 			DBG (( "\nReceived connection from %s on socket %d\n", inet_ntoa(their_addr.sin_addr), newsock ));
 			inet_pton(AF_INET, inet_ntoa(their_addr.sin_addr), &ipv4addr);
 			he = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
-			printf ("\nADDING %s TO CON_LIST\n", he->h_name);
+			//printf ("\nADDING %s TO CON_LIST\n", he->h_name);
 
 			if ( is_connected(he->h_name) > -1 ) {
-				printf ("Server -- already connected");
+				//printf ("Server -- already connected");
 				pthread_mutex_unlock (&lock);
 				continue;
 			}
@@ -190,20 +185,20 @@ setup_listen_thread ( int port ) {
 	return;
 }
 
+/*
+ * This function Connects to all other nodes
+ * in the system
+ */
 void
 setup_connect_to ( int port ) {
 
 	int index_list = 0;
-	char host[MAX_HOST_LEN];
 	int sock;
 	pthread_t thread;
 	struct sockaddr_in server;   /* Socket info. for server */
 	struct hostent *hp;   /* Return value from gethostbyname() */
 	char buf[BUFF_SIZE];   /* Received data buffer */
 	int conn_count = 0;
-
-	gethostname ( host, sizeof host );
-	fprintf ( stdout, "Your hostname = %s\n", host );
 
 	/* 
 	 * Go through con_list and check
@@ -215,11 +210,11 @@ setup_connect_to ( int port ) {
 		sleep(5);
 		for ( index_list = 0; index_list < MAX_NODES; index_list++ ) {
 
-			printf ( "\nTrying %s: ", con_list[index_list].name );
+			//printf ( "\nTrying %s: ", con_list[index_list].name );
 
 			// Come on! You can't connect to self...
-			if ( strcasecmp ( con_list[index_list].name, host ) == 0 ) {
-				printf ( "Cant connect to self!" );
+			if ( strcasecmp ( con_list[index_list].name, hostname ) == 0 ) {
+				//printf ( "Cant connect to self!" );
 				continue;
 			}
 
@@ -228,7 +223,7 @@ setup_connect_to ( int port ) {
 			pthread_mutex_lock (&lock);
 			if ( is_connected ( con_list[index_list].name ) > -1 ) {
 				/* Oops! looks like a socket is associated with that node */
-				printf ( "Already connected");
+				//printf ( "Already connected");
 				conn_count++;
 				pthread_mutex_unlock(&lock);
 				continue;
@@ -237,7 +232,7 @@ setup_connect_to ( int port ) {
 
 			/* Preparing to connect to the socket */
 			if ( (hp = gethostbyname(con_list[index_list].name) ) == NULL) {
-				sprintf( buf, "%s: unknown host\n", host);
+				sprintf( buf, "%s: unknown host\n", con_list[index_list].name);
 				printf( buf );
 				pthread_mutex_unlock(&lock);
 				continue;
@@ -267,7 +262,7 @@ setup_connect_to ( int port ) {
 				pthread_mutex_unlock(&lock);
 				continue;
 			} else {
-				printf ("Connected!");
+				//printf ("Connected!");
 				// Add to con_list
 				// MUTEX
 				if ( pthread_create ( &thread, NULL, handle_socket, (void *) sock) != 0 ) {
