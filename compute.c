@@ -26,7 +26,7 @@ void
 start_compute ( void ) {
 	char buffer[BUFF_SIZE];
 	int i, attempt;
-	for ( attempt = 1 ; attempt <= 10; attempt++ ) {
+	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
 		pthread_mutex_lock ( &requesting_lock );
@@ -50,7 +50,7 @@ start_compute ( void ) {
 		while ( 1 ) {
 			sleep (10);
 			printf ("+");
-			pthread_mutex_lock ( &requesting_lock );
+			//pthread_mutex_lock ( &requesting_lock );
 			if ( total_requests == MAX_NODES-1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
 				pthread_mutex_lock ( &critical_lock );
@@ -63,7 +63,7 @@ start_compute ( void ) {
 				pthread_mutex_unlock ( &critical_lock );
 				break;
 			}
-			pthread_mutex_unlock ( &requesting_lock );
+			//pthread_mutex_unlock ( &requesting_lock );
 		} // End While
 		send_deferred_replies ();
 		pthread_mutex_lock ( &requesting_lock );
