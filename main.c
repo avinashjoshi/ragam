@@ -1,5 +1,6 @@
 #include "my_header.h"
 #include <pthread.h>
+#include <unistd.h>
 
 const char *prog_name;
 
@@ -32,6 +33,7 @@ main ( int argc, char *argv[] ) {
 	 * Setting defer and request 
 	 * to NULL
 	 */
+	time_t total_start, total_stop;
 	d_q = r_q = NULL;
 	is_in_critical = FALSE;
 	is_requesting = FALSE;
@@ -45,12 +47,22 @@ main ( int argc, char *argv[] ) {
 	gethostname ( hostname, sizeof hostname);
 	node_number = get_node_index ( hostname );
 
+	sprintf(filename, "output/%d", node_number);
+	fp = fopen ( filename, "a" );
+
+	if ( fp == NULL ) {
+		printf ("Please create output folder..");
+		exit ( EXIT_FAILURE );
+	}
+
 	/*
 	 * Timestamp is the node number
 	 * to eliminate same timestamp requests
 	 */
 	int timestamp = node_number;
 	global_ts = timestamp;
+
+	time (&total_start);
 
 	/*
 	 * Setup listen threads that will 
@@ -87,6 +99,8 @@ main ( int argc, char *argv[] ) {
 	}
 	 */
 
+	time (&total_stop);
+
 	fprintf ( stdout, "Waiting for scanf...." );
 	int a;
 	scanf ( "%d", &a );
@@ -96,7 +110,12 @@ main ( int argc, char *argv[] ) {
 	printf ("\nDEFERRED QUEUE\n");
 	print_d_queue ();
 	printf ("\nAnalysis\n====================================\n");
-	printf ("Total # messages exchanged: %d\n");
+	printf ("Total # messages exchanged: %d\n", total_messages);
+	printf ("Total Execution time: %.0f\n", difftime(total_stop, total_start));
+	fprintf ( fp, "\n\nAnalysis\n====================================\n");
+	fprintf ( fp, "Total # messages exchanged: %d\n", total_messages);
+	fprintf ( fp, "Total Execution time: %.0f\n", difftime(total_stop, total_start));
+	fclose ( fp );
 
 	// Have to write the initial connection code here
 

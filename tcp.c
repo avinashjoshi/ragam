@@ -18,13 +18,9 @@
  */
 void
 *handle_socket ( void *new_sock ) {
-	FILE *fp;
 	char buffer[BUFF_SIZE];
-	char filename[50];
 	int sock = (long int) new_sock;
 	//fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
-	//sprintf(filename, "output/%d", node_number);
-	//fp = fopen ( filename, "a" );
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);

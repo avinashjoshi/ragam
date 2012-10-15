@@ -29,6 +29,9 @@ start_compute ( void ) {
 	int i, attempt;
 	time_t start, stop;
 	/* First Phase... */
+	fprintf ( fp, "Time between request and entering CS:\n\n");
+	fprintf ( fp, "======= ALL NODES ======\n");
+	fprintf ( fp, "ATTEMPT\tTIME(s)\n");
 	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
@@ -70,6 +73,7 @@ start_compute ( void ) {
 				pthread_mutex_unlock ( &critical_lock);
 				time(&stop);
 				printf ("Phew... Got access in %.0f seconds.\n sleeping for 3 seconds\n", difftime(stop, start));
+				fprintf ( fp, "%d\t%.0f", attempt, difftime(stop, start));
 				sleep (3);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
@@ -85,6 +89,8 @@ start_compute ( void ) {
 		pthread_mutex_unlock ( &requesting_lock );
 	}
 	// For odd and even nodes
+	fprintf ( fp, "\n======= EVEN/ODD NODES ======\n");
+	fprintf ( fp, "ATTEMPT\tTIME(s)\n");
 	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
@@ -130,6 +136,7 @@ start_compute ( void ) {
 				pthread_mutex_unlock ( &critical_lock);
 				time(&stop);
 				printf ("Phew... Got access in %.0f seconds.\n sleeping for 3 seconds\n", difftime(stop, start));
+				fprintf ( fp, "%d\t%.0f", attempt, difftime(stop, start));
 				sleep (3);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;

@@ -9,9 +9,16 @@
  * (Usefule while testing on local)
  */
 #define LISTEN_PORT 56744
+#define CONFIG_FILE "config"
 #define MAX_NODES 4
+
+/*
+ * !!!! DO NOT EDIT BELOW THIS LINE !!!!
+ */
+
 #define BUFF_SIZE 1024
 #define MAX_HOST_LEN 100
+#define HOST_SIZE 30
 
 #define REQUEST 0
 #define REPLY 1
@@ -21,9 +28,6 @@
 
 #define TRUE 1
 #define FALSE 0
-
-#define CONFIG_FILE "config"
-#define HOST_SIZE 30
 
 /*
  * Comment the below line if you
@@ -60,6 +64,8 @@ int total_messages;
 
 int node_number;
 char hostname[MAX_HOST_LEN];
+char filename[50];
+FILE *fp;
 
 /* Global connection list variable */
 struct node {
