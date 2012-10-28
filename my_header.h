@@ -8,9 +8,9 @@
  * for different nodes
  * (Usefule while testing on local)
  */
-#define LISTEN_PORT 56744
+#define LISTEN_PORT 74924
 #define CONFIG_FILE "config"
-#define MAX_NODES 4
+#define MAX_NODES 10
 
 /*
  * !!!! DO NOT EDIT BELOW THIS LINE !!!!

@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <pthread.h>
-#include <time.h>
+#include <sys/time.h>
 
 void
 send_deferred_replies ( void ) {
@@ -23,15 +23,52 @@ send_deferred_replies ( void ) {
 	pthread_mutex_unlock (&dq_lock);
 }
 
+long long
+timeval_diff(struct timeval *difference,
+		struct timeval *end_time,
+		struct timeval *start_time
+		)
+{
+	struct timeval temp_diff;
+
+	if(difference==NULL)
+	{
+		difference=&temp_diff;
+	}
+
+	difference->tv_sec =end_time->tv_sec -start_time->tv_sec ;
+	difference->tv_usec=end_time->tv_usec-start_time->tv_usec;
+
+	/* Using while instead of if below makes the code slightly more robust. */
+
+	while(difference->tv_usec<0)
+	{
+		difference->tv_usec+=1000000;
+		difference->tv_sec -=1;
+	}
+
+	return 1000000LL*difference->tv_sec+
+		difference->tv_usec;
+
+} /* timeval_diff() */
+
 void
 start_compute ( void ) {
 	char buffer[BUFF_SIZE];
 	int i, attempt;
-	time_t start, stop;
+	//time_t start, stop;
+
+	struct timeval earlier;
+	struct timeval later;
+	struct timeval interval;
+
+	int unit = 100;
+	int sleep_time;
+
 	/* First Phase... */
 	fprintf ( fp, "Time between request and entering CS:\n\n");
 	fprintf ( fp, "======= ALL NODES ======\n");
-	fprintf ( fp, "ATTEMPT\tTIME(s)\n");
+	fprintf ( fp, "ATTEMPT\t\tTIME(u~sec)\n");
 	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
@@ -45,7 +82,8 @@ start_compute ( void ) {
 		/*
 		 * Requesting to access critical section
 		 */
-		time(&start);
+		//time(&start);
+		gettimeofday(&earlier,NULL);
 		for ( i = 0; i < MAX_NODES; i++ ) {
 			/*
 			 * Dont send to self!!!!
@@ -64,17 +102,19 @@ start_compute ( void ) {
 		}
 		printf ("\nTrying to enter critical section...\n");
 		while ( 1 ) {
-			sleep (10);
+			sleep_time = ((rand() % 10 ) + 10 ) * unit;
+			usleep (sleep_time);
 			pthread_mutex_lock ( &requesting_lock );
 			if ( total_requests == MAX_NODES-1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = TRUE;
 				pthread_mutex_unlock ( &critical_lock);
-				time(&stop);
-				printf ("Phew... Got access in %.0f seconds.\n sleeping for 3 seconds\n", difftime(stop, start));
-				fprintf ( fp, "%d\t%.0f", attempt, difftime(stop, start));
-				sleep (3);
+				//time(&stop);
+				gettimeofday(&later,NULL);
+				printf ("Phew... Got access in %lld u~seconds.\n sleeping for 300 useconds\n", timeval_diff(NULL,&later,&earlier));
+				fprintf ( fp, "%d\t\t%lld", attempt, timeval_diff(NULL,&later,&earlier));
+				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
 				pthread_mutex_unlock ( &critical_lock );
@@ -90,7 +130,7 @@ start_compute ( void ) {
 	}
 	// For odd and even nodes
 	fprintf ( fp, "\n======= EVEN/ODD NODES ======\n");
-	fprintf ( fp, "ATTEMPT\tTIME(s)\n");
+	fprintf ( fp, "ATTEMPT\t\tTIME(u~sec)\n");
 	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
@@ -104,7 +144,8 @@ start_compute ( void ) {
 		/*
 		 * Requesting to access critical section
 		 */
-		time(&start);
+		//time(&start);
+		gettimeofday(&earlier,NULL);
 		for ( i = 0; i < MAX_NODES; i++ ) {
 			/*
 			 * Dont send to self!!!!
@@ -124,9 +165,11 @@ start_compute ( void ) {
 		printf ("\nTrying to enter critical section...\n");
 		while ( 1 ) {
 			if ( node_number % 2 == 0 ) {
-				sleep ( 40 );
+				sleep_time = ((rand() % 10 ) + 40 ) * unit;
+				usleep (sleep_time);
 			} else {
-				sleep (10);
+				sleep_time = ((rand() % 10 ) + 10 ) * unit;
+				usleep (sleep_time);
 			}
 			pthread_mutex_lock ( &requesting_lock );
 			if ( total_requests == MAX_NODES-1 ) {
@@ -134,10 +177,11 @@ start_compute ( void ) {
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = TRUE;
 				pthread_mutex_unlock ( &critical_lock);
-				time(&stop);
-				printf ("Phew... Got access in %.0f seconds.\n sleeping for 3 seconds\n", difftime(stop, start));
-				fprintf ( fp, "%d\t%.0f", attempt, difftime(stop, start));
-				sleep (3);
+				//time(&stop);
+				gettimeofday(&later,NULL);
+				printf ("Phew... Got access in %lld seconds.\n sleeping for 3 useconds\n", timeval_diff(NULL,&later,&earlier));
+				fprintf ( fp, "%d\t\t%lld", attempt, timeval_diff(NULL,&later,&earlier));
+				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
 				pthread_mutex_unlock ( &critical_lock );
