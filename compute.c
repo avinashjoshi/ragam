@@ -107,13 +107,25 @@ start_compute ( void ) {
 			pthread_mutex_lock ( &requesting_lock );
 			if ( total_requests == MAX_NODES-1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
+				//Testing
+				FILE *s1 = fopen("s1","a");
+				fprintf (s1, "%d:%d\n", node_number, attempt);
+				printf ("s1:%d:%d\n", node_number, attempt);
+				fclose(s1);
+				//Testing
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = TRUE;
 				pthread_mutex_unlock ( &critical_lock);
 				//time(&stop);
 				gettimeofday(&later,NULL);
 				printf ("Phew... Got access in %lld u~seconds.\n sleeping for 300 useconds\n", timeval_diff(NULL,&later,&earlier));
-				fprintf ( fp, "%d\t\t%lld", attempt, timeval_diff(NULL,&later,&earlier));
+				fprintf ( fp, "%d\t\t%lld\n", attempt, timeval_diff(NULL,&later,&earlier));
+				//Testing
+				FILE *s2 = fopen("s2","a");
+				fprintf (s2, "%d:%d\n", node_number, attempt);
+				printf ("s2:%d:%d\n", node_number, attempt);
+				fclose(s2);
+				//Testing
 				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
@@ -180,7 +192,7 @@ start_compute ( void ) {
 				//time(&stop);
 				gettimeofday(&later,NULL);
 				printf ("Phew... Got access in %lld seconds.\n sleeping for 3 useconds\n", timeval_diff(NULL,&later,&earlier));
-				fprintf ( fp, "%d\t\t%lld", attempt, timeval_diff(NULL,&later,&earlier));
+				fprintf ( fp, "%d\t\t%lld\n", attempt, timeval_diff(NULL,&later,&earlier));
 				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;

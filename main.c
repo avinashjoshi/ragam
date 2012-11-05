@@ -47,7 +47,7 @@ main ( int argc, char *argv[] ) {
 	gethostname ( hostname, sizeof hostname);
 	node_number = get_node_index ( hostname );
 
-	sprintf(filename, "output/%d", node_number);
+	sprintf(filename, "result/%d", node_number);
 	fp = fopen ( filename, "a" );
 
 	if ( fp == NULL ) {

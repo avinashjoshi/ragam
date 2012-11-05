@@ -22,14 +22,15 @@ void
 	char buffer[BUFF_SIZE];
 	//printf ("\n INSIDE HANDLE_RECEIVE()\n");
 	while ( 1 ) {
-		while ( is_r_queue_empty() == TRUE );
 		/*
+		while ( is_r_queue_empty() == TRUE );
+		*/
 		   pthread_mutex_lock ( &q_lock );
 		   if ( is_r_queue_empty() == TRUE ) {
 		   pthread_mutex_unlock( &q_lock );
+		   usleep(100);
 		   continue;
 		   }
-		   */
 		q = remove_r_queue ();
 		pthread_mutex_unlock ( &q_lock );
 		//printf ( "===> Pop() - %s\n", q->data );
@@ -49,7 +50,7 @@ void
 		//printf ( "\n####> %d v/s %d\n", request_ts, ts);
 		if ( ( is_in_critical == FALSE && 
 					is_requesting == FALSE ) ||
-				request_ts >= ts || ( request_ts == ts && node_number < node)
+				request_ts > ts || ( request_ts == ts && node_number > node)
 		   ) {
 			pthread_mutex_unlock ( &critical_lock );
 			sprintf ( buffer, "%d|%d|%d", REPLY, node_number, global_ts);

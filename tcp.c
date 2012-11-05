@@ -305,4 +305,6 @@ setup_connect_to ( int port ) {
 	} while ( 1 ); // end while()
 	// thread for handle_socket
 	// to read data on that socket
+	//void *status;
+	//pthread_join ( thread, &status );
 }
