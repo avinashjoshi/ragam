@@ -14,7 +14,7 @@
 
 #define SERVER_CONF "config/server.conf"
 #define CLIENT_CONF "config/client.conf"
-#define MAX_SERVER 3
+#define MAX_SERVERS 3
 #define MAX_CLIENTS 6
 
 /*

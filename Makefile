@@ -1,6 +1,6 @@
 CC := gcc
 OBJECTS := client_src/main.o client_src/helper.o client_src/tcp.o client_src/compute.o client_src/handle_receive.o client_src/r_queue.o client_src/d_queue.o
-SERVER_OBJ := server_src/main.o
+SERVER_OBJ := server_src/main.o server_src/helper.o server_src/tcp.o server_src/handle_receive.o server_src/r_queue.o
 
 #%.o: %.c
 #	$(CC) -c -o $@ $< $(LDFLAGS)
