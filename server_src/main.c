@@ -1,4 +1,4 @@
-#include "../commons.h"
+#include "server_header.h"
 
 int
 main () {
