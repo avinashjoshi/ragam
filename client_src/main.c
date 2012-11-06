@@ -12,7 +12,7 @@ main ( int argc, char *argv[] ) {
 	prog_name = get_program_name ( argv[0] );
 	int port;
 
-#ifndef LISTEN_PORT
+#ifndef CLIENT_PORT
 	/* Listen port not defined
 	 * => Program must accept port */
 	if ( argc < 2 ) {
@@ -22,10 +22,10 @@ main ( int argc, char *argv[] ) {
 #endif
 
 	// Convert port to integer if taken as argument
-#ifndef LISTEN_PORT
+#ifndef CLIENT_PORT
 	port = atoi ( argv[1] );
 #else
-	port = LISTEN_PORT;
+	port = CLIENT_PORT;
 #endif
 
 	int i;
@@ -107,26 +107,26 @@ main ( int argc, char *argv[] ) {
 	*/
 
 	/*
-	for ( i = 0; i < MAX_NODES; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 		send ( con_list[i].sock, "END", BUFF_SIZE, 0 );
 	*/
 
-	while (end_compute < MAX_NODES - 1 )
+	while (end_compute < MAX_CLIENTS - 1 )
 		usleep(1000);
 	printf ("\n:End = %d:\n", end_compute);
 
 	/*
 	int i;
 	(void) pthread_join (thread, NULL);
-	for ( i = 0; i < MAX_NODES; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 		(void) pthread_join (thread_h[i], NULL);
-	while (end_compute < MAX_NODES - 1 )
+	while (end_compute < MAX_CLIENTS - 1 )
 		usleep(1000);
 
 		*/
 	/*
 	 * Closing all sockets before quiting program
-	for ( i = 0; i < MAX_NODES; i++ ) {
+	for ( i = 0; i < MAX_CLIENTS; i++ ) {
 		close ( con_list[i].sock );
 	}
 	 */

@@ -212,7 +212,7 @@ setup_connect_to ( int port ) {
 
 	do {
 		sleep(5);
-		for ( index_list = 0; index_list < MAX_NODES; index_list++ ) {
+		for ( index_list = 0; index_list < MAX_CLIENTS; index_list++ ) {
 
 			//printf ( "\nTrying %s: ", con_list[index_list].name );
 

@@ -50,10 +50,10 @@ parse_config ( void ) {
 	FILE *file;
 	char *c;
 
-	file = fopen ( CONFIG_FILE, "r" );
+	file = fopen ( CLIENT_CONF, "r" );
 	if ( file != NULL ) {
 		char line[HOST_SIZE];
-		while ( index < MAX_NODES ) {
+		while ( index < MAX_CLIENTS ) {
 			if ( fgets ( line, sizeof line, file ) == NULL )
 				break;
 			c = strchr (line, '\n');
@@ -69,7 +69,7 @@ parse_config ( void ) {
 		}
 		fclose (file);
 	} else {
-		perror ( CONFIG_FILE );
+		perror ( CLIENT_CONF );
 	}
 }
 
@@ -81,7 +81,7 @@ int
 is_connected ( char *node) {
 	int index = 0;
 	int flag = FALSE;
-	for ( ; index < MAX_NODES; index++ ) {
+	for ( ; index < MAX_CLIENTS; index++ ) {
 		if ( strcasecmp ( con_list[index].name, node ) == 0 ) {
 			if ( con_list[index].status == TRUE ) {
 				flag = TRUE;
@@ -102,7 +102,7 @@ int
 add_to_conlist ( char *host, int sock ) {
 	int i = 0;
 	int flag = FALSE;
-	for ( ; i < MAX_NODES; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( strcasecmp ( con_list[i].name, host ) == 0 ) {
 			flag = TRUE;
 			break;
@@ -125,7 +125,7 @@ void
 print_con_list ( void ) {
 	int i;
 	printf ( "\n\n CONN LIST:\n");
-	for ( i = 0; i < MAX_NODES; i++ ) {
+	for ( i = 0; i < MAX_CLIENTS; i++ ) {
 		printf ( "%d : %s\n", con_list[i].sock, con_list[i].name);
 	}
 }
@@ -137,7 +137,7 @@ int
 all_connected ( void ) {
 	int i = 0;
 	int flag = FALSE;
-	for ( ; i < MAX_NODES; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( con_list[i].status == FALSE ) {
 			flag = TRUE;
 			break;
@@ -152,7 +152,7 @@ all_connected ( void ) {
 char *
 get_node_name_from_socket ( int sock ) {
 	int i = 0;
-	for ( ; i < MAX_NODES; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( sock == con_list[i].sock )
 			break;
 	}
@@ -161,7 +161,7 @@ get_node_name_from_socket ( int sock ) {
 
 int get_node_index ( char *hostname) {
 	int i = 0;
-	for ( ; i < MAX_NODES; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( strcasecmp ( con_list[i].name, hostname) == 0 )
 			break;
 	}

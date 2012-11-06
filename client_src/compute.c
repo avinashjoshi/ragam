@@ -86,7 +86,7 @@ start_compute ( void ) {
 		 */
 		//time(&start);
 		gettimeofday(&earlier,NULL);
-		for ( i = 0; i < MAX_NODES; i++ ) {
+		for ( i = 0; i < MAX_CLIENTS; i++ ) {
 			/*
 			 * Dont send to self!!!!
 			 */
@@ -107,7 +107,7 @@ start_compute ( void ) {
 			sleep_time = ((rand() % 40 ) + 10 ) * unit;
 			usleep (sleep_time);
 			pthread_mutex_lock ( &requesting_lock );
-			if ( total_requests == MAX_NODES - 1 ) {
+			if ( total_requests == MAX_CLIENTS - 1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
 				//Testing
 				FILE *s1 = fopen("s1","a");
@@ -153,7 +153,7 @@ start_compute ( void ) {
 		pthread_mutex_unlock ( &requesting_lock );
 	}
 
-	for ( i = 0; i < MAX_NODES; i++ ) {
+	for ( i = 0; i < MAX_CLIENTS; i++ ) {
 		if ( strcasecmp ( hostname, con_list[i].name ) == 0 ) {
 			continue;
 		}
