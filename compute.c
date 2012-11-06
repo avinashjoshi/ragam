@@ -58,6 +58,8 @@ start_compute ( void ) {
 	int i, attempt;
 	//time_t start, stop;
 
+	srand ( time(NULL) );
+
 	struct timeval earlier;
 	struct timeval later;
 	struct timeval interval;
@@ -69,7 +71,7 @@ start_compute ( void ) {
 	fprintf ( fp, "Time between request and entering CS:\n\n");
 	fprintf ( fp, "======= ALL NODES ======\n");
 	fprintf ( fp, "ATTEMPT\t\tTIME(u~sec)\n");
-	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
+	for ( attempt = 1 ; attempt <= 40; attempt++ ) {
 		printf ("\n===== ATTEMPT %d =====\n", attempt );
 		//while ( all_connected() == FALSE );
 		pthread_mutex_lock ( &requesting_lock );
@@ -102,10 +104,10 @@ start_compute ( void ) {
 		}
 		printf ("\nTrying to enter critical section...\n");
 		while ( 1 ) {
-			sleep_time = ((rand() % 10 ) + 10 ) * unit;
+			sleep_time = ((rand() % 40 ) + 10 ) * unit;
 			usleep (sleep_time);
 			pthread_mutex_lock ( &requesting_lock );
-			if ( total_requests == MAX_NODES-1 ) {
+			if ( total_requests == MAX_NODES - 1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
 				//Testing
 				FILE *s1 = fopen("s1","a");
@@ -126,6 +128,16 @@ start_compute ( void ) {
 				printf ("s2:%d:%d\n", node_number, attempt);
 				fclose(s2);
 				//Testing
+
+				/* -- MAIN CODE -- */
+				/*
+				for (i = 0; i < MAX_SERVERS; i ++){
+				send the mesage <node_number, seq_number, hostname>
+				}
+				seq_number++;
+				*/
+				/* -- MAIN CODE -- */
+
 				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
@@ -140,71 +152,12 @@ start_compute ( void ) {
 		total_requests = 0;
 		pthread_mutex_unlock ( &requesting_lock );
 	}
-	// For odd and even nodes
-	fprintf ( fp, "\n======= EVEN/ODD NODES ======\n");
-	fprintf ( fp, "ATTEMPT\t\tTIME(u~sec)\n");
-	for ( attempt = 1 ; attempt <= 20; attempt++ ) {
-		printf ("\n===== ATTEMPT %d =====\n", attempt );
-		//while ( all_connected() == FALSE );
-		pthread_mutex_lock ( &requesting_lock );
-		is_requesting = TRUE;
-		pthread_mutex_unlock ( &requesting_lock );
-		pthread_mutex_lock (&ts_lock);
-		request_ts = global_ts;
-		sprintf ( buffer, "%d|%d|%d", REQUEST, node_number, global_ts );
-		pthread_mutex_unlock (&ts_lock);
-		/*
-		 * Requesting to access critical section
-		 */
-		//time(&start);
-		gettimeofday(&earlier,NULL);
-		for ( i = 0; i < MAX_NODES; i++ ) {
-			/*
-			 * Dont send to self!!!!
-			 */
-			if ( strcasecmp ( hostname, con_list[i].name ) == 0 ) {
-				continue;
-			}
-			send ( con_list[i].sock, buffer, BUFF_SIZE, 0 );
-			printf ("SENDING REQUEST TO %s: %s\n", con_list[i].name, buffer);
-			pthread_mutex_lock (&ts_lock);
-			global_ts++;
-			pthread_mutex_unlock (&ts_lock);
-			pthread_mutex_lock ( &analysis_lock );
-			total_messages++;
-			pthread_mutex_unlock ( &analysis_lock );
+
+	for ( i = 0; i < MAX_NODES; i++ ) {
+		if ( strcasecmp ( hostname, con_list[i].name ) == 0 ) {
+			continue;
 		}
-		printf ("\nTrying to enter critical section...\n");
-		while ( 1 ) {
-			if ( node_number % 2 == 0 ) {
-				sleep_time = ((rand() % 10 ) + 40 ) * unit;
-				usleep (sleep_time);
-			} else {
-				sleep_time = ((rand() % 10 ) + 10 ) * unit;
-				usleep (sleep_time);
-			}
-			pthread_mutex_lock ( &requesting_lock );
-			if ( total_requests == MAX_NODES-1 ) {
-				pthread_mutex_unlock ( &requesting_lock );
-				pthread_mutex_lock ( &critical_lock );
-				is_in_critical = TRUE;
-				pthread_mutex_unlock ( &critical_lock);
-				//time(&stop);
-				gettimeofday(&later,NULL);
-				printf ("Phew... Got access in %lld seconds.\n sleeping for 3 useconds\n", timeval_diff(NULL,&later,&earlier));
-				fprintf ( fp, "%d\t\t%lld\n", attempt, timeval_diff(NULL,&later,&earlier));
-				usleep (300);
-				pthread_mutex_lock ( &critical_lock );
-				is_in_critical = FALSE;
-				pthread_mutex_unlock ( &critical_lock );
-				break;
-			}
-			pthread_mutex_unlock ( &requesting_lock );
-		} // End While
-		send_deferred_replies ();
-		pthread_mutex_lock ( &requesting_lock );
-		is_requesting = FALSE;
-		total_requests = 0;
-		pthread_mutex_unlock ( &requesting_lock );
+		send ( con_list[i].sock, "END", BUFF_SIZE, 0 );
+		printf ("=> SENT END TO %s\n", con_list[i].name);
 	}
 }

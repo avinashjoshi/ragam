@@ -1,6 +1,7 @@
 #include "my_header.h"
 #include <pthread.h>
 #include <unistd.h>
+#include <netdb.h>
 
 const char *prog_name;
 
@@ -26,6 +27,10 @@ main ( int argc, char *argv[] ) {
 #else
 	port = LISTEN_PORT;
 #endif
+
+	int i;
+	seq_number = 0;
+	end_compute = 0;
 
 	parse_config ();
 
@@ -64,6 +69,8 @@ main ( int argc, char *argv[] ) {
 
 	time (&total_start);
 
+	//connect_to_servers ();
+
 	/*
 	 * Setup listen threads that will 
 	 * allow other nodes talk to me
@@ -91,19 +98,39 @@ main ( int argc, char *argv[] ) {
 	 */
 	start_compute();
 
+	time (&total_stop);
+
+	/*
+	fprintf ( stdout, "Waiting for scanf...." );
+	int a;
+	scanf ( "%d", &a );
+	*/
+
+	/*
+	for ( i = 0; i < MAX_NODES; i++ )
+		send ( con_list[i].sock, "END", BUFF_SIZE, 0 );
+	*/
+
+	while (end_compute < MAX_NODES - 1 )
+		usleep(1000);
+	printf ("\n:End = %d:\n", end_compute);
+
+	/*
+	int i;
+	(void) pthread_join (thread, NULL);
+	for ( i = 0; i < MAX_NODES; i++ )
+		(void) pthread_join (thread_h[i], NULL);
+	while (end_compute < MAX_NODES - 1 )
+		usleep(1000);
+
+		*/
 	/*
 	 * Closing all sockets before quiting program
-	int i;
 	for ( i = 0; i < MAX_NODES; i++ ) {
 		close ( con_list[i].sock );
 	}
 	 */
 
-	time (&total_stop);
-
-	fprintf ( stdout, "Waiting for scanf...." );
-	int a;
-	scanf ( "%d", &a );
 	print_con_list();
 	printf ("\nREQUEST QUEUE\n");
 	print_r_queue ();

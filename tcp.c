@@ -25,7 +25,14 @@ void
 		bzero ( buffer, BUFF_SIZE);
 		recv (sock, buffer, BUFF_SIZE, 0);
 		if ( strcasecmp (buffer, "" ) == 0 ) {
-			break;
+			continue;
+		}
+		if ( strcasecmp (buffer, "END" ) == 0 ) {
+			pthread_mutex_lock ( &end_lock );
+			//printf ("END++");
+			end_compute++;
+			pthread_mutex_unlock ( &end_lock );
+			continue;
 		}
 		//fprintf (fp, "===> Received %s: %s\n", get_node_name_from_socket (sock), buffer);
 		fprintf (stdout, "INSERTED into REQ_Q -- %s: %s\n", buffer, get_node_name_from_socket (sock));
@@ -139,7 +146,7 @@ void
 				continue;
 			}
 
-			if ( pthread_create ( &thread, NULL, handle_socket, (void *) newsock) != 0 ) {
+			if ( pthread_create ( &thread_h[get_node_index(he->h_name)], NULL, handle_socket, (void *) newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );
 				pthread_mutex_unlock (&lock);
 				continue;
@@ -262,7 +269,7 @@ setup_connect_to ( int port ) {
 				//printf ("Connected!");
 				// Add to con_list
 				// MUTEX
-				if ( pthread_create ( &thread, NULL, handle_socket, (void *) sock) != 0 ) {
+				if ( pthread_create ( &thread_h[index_list], NULL, handle_socket, (void *) sock) != 0 ) {
 					pthread_mutex_unlock(&lock);
 					continue;
 				}

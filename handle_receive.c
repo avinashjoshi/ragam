@@ -36,6 +36,14 @@ void
 		//printf ( "===> Pop() - %s\n", q->data );
 		token = strtok ( q->data, "|");
 		mode = atoi(token);
+		/*
+		if ( mode == 2 ) {
+			pthread_mutex_lock ( &end_lock );
+			end_compute++;
+			pthread_mutex_unlock ( &end_lock );
+			continue;
+		}
+		*/
 		token = strtok (NULL, "|");
 		node = atoi(token);
 		token = strtok (NULL, "|");

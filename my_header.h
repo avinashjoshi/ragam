@@ -11,6 +11,7 @@
 #define LISTEN_PORT 56744
 #define CONFIG_FILE "config"
 #define MAX_NODES 10
+#define MAX_SERVER 3
 
 /*
  * !!!! DO NOT EDIT BELOW THIS LINE !!!!
@@ -29,6 +30,11 @@
 #define TRUE 1
 #define FALSE 0
 
+int end_compute;
+pthread_t thread_h[MAX_NODES];
+
+int seq_number;
+
 /*
  * Comment the below line if you
  * want to disable debug mode
@@ -45,6 +51,8 @@
 #ifndef PATH_SEPARATOR
 	#define PATH_SEPARATOR '/'
 #endif
+
+pthread_mutex_t end_lock;
 
 pthread_mutex_t lock;
 pthread_mutex_t dq_lock;
