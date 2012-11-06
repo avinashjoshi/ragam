@@ -47,7 +47,7 @@ struct node {
 	int sock;
 	char name[HOST_SIZE];
 	int status;
-} con_list [ MAX_CLIENTS ];
+} con_list [ MAX_CLIENTS ], serv_list[MAX_SERVERS];
 
 /* Linked List for algorithm */
 /*

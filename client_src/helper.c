@@ -41,6 +41,39 @@ get_program_name ( char argv[] ) {
  */
 
 /*
+ * parse server config file...
+ */
+void
+parse_server_config ( void ) {
+	struct hostent *he;
+	int index = 0;
+	FILE *file;
+	char *c;
+
+	file = fopen ( SERVER_CONF, "r" );
+	if ( file != NULL ) {
+		char line[HOST_SIZE];
+		while ( index < MAX_SERVERS ) {
+			if ( fgets ( line, sizeof line, file ) == NULL )
+				break;
+			c = strchr (line, '\n');
+			if (c)
+				*c = 0;
+			/* Get host name */
+			he = gethostbyname ( line );
+			printf ("%d: %s %s - %ld\n", index, line, he->h_name, sizeof (he->h_name));
+			serv_list[index].sock = -1;
+			strcpy ( serv_list[index].name, he->h_name );
+			serv_list[index].status = FALSE;
+			index++;
+		}
+		fclose (file);
+	} else {
+		perror ( SERVER_CONF );
+	}
+}
+
+/*
  * parse config file...
  */
 void
@@ -99,6 +132,29 @@ is_connected ( char *node) {
  * Add to con_list
  */
 int
+add_to_servlist ( char *host, int sock ) {
+	int i = 0;
+	int flag = FALSE;
+	for ( ; i < MAX_SERVERS; i++ ) {
+		if ( strcasecmp ( serv_list[i].name, host ) == 0 ) {
+			flag = TRUE;
+			break;
+		}
+	}
+	if ( flag == FALSE ) {
+		printf ("*** Something's wrong....\n");
+		return -1;
+	}
+	serv_list[i].sock = sock;
+	strcpy ( serv_list[i].name, host );
+	serv_list[i].status = TRUE;
+	return i;
+}
+
+/*
+ * Add to con_list
+ */
+int
 add_to_conlist ( char *host, int sock ) {
 	int i = 0;
 	int flag = FALSE;
@@ -128,6 +184,25 @@ print_con_list ( void ) {
 	for ( i = 0; i < MAX_CLIENTS; i++ ) {
 		printf ( "%d : %s\n", con_list[i].sock, con_list[i].name);
 	}
+}
+
+/*
+ * Check if all nodes are connected
+ */
+int
+all_serv_connected ( void ) {
+	int i = 0;
+	int flag = FALSE;
+	for ( ; i < MAX_SERVERS; i++ ) {
+		if ( serv_list[i].status == FALSE ) {
+			flag = TRUE;
+			break;
+		}
+	}
+	if ( flag )
+		return FALSE;
+	else
+		return TRUE;
 }
 
 /*

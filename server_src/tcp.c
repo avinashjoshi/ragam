@@ -27,7 +27,7 @@ void
 		if ( strcasecmp (buffer, "" ) == 0 ) {
 			continue;
 		}
-		fprintf (stdout, "INSERTED into Q -- %s: %s\n", buffer, get_node_name_from_socket (sock));
+		fprintf (stdout, "INSERTED into Q -- %s\n", buffer);
 		pthread_mutex_lock ( &q_lock );
 		insert_r_queue ( buffer );
 		pthread_mutex_unlock ( &q_lock );
@@ -137,6 +137,7 @@ void
 				pthread_mutex_unlock (&lock);
 				continue;
 			} else {
+				printf ("ADDING %s\n", he->h_name);
 				add_to_conlist (he->h_name, newsock);
 				pthread_mutex_unlock (&lock);
 			}

@@ -11,6 +11,7 @@ main ( int argc, char *argv[] ) {
 	/* Variable Declerations */
 	prog_name = get_program_name ( argv[0] );
 	int port;
+	int server_port;
 
 #ifndef CLIENT_PORT
 	/* Listen port not defined
@@ -28,11 +29,14 @@ main ( int argc, char *argv[] ) {
 	port = CLIENT_PORT;
 #endif
 
+	server_port = SERVER_PORT;
+
 	int i;
 	seq_number = 0;
 	end_compute = 0;
 
 	parse_config ();
+	parse_server_config ();
 
 	/* 
 	 * Setting defer and request 
@@ -69,7 +73,7 @@ main ( int argc, char *argv[] ) {
 
 	time (&total_start);
 
-	//connect_to_servers ();
+	connect_to_servers (server_port);
 
 	/*
 	 * Setup listen threads that will 

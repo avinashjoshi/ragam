@@ -31,6 +31,10 @@ handle_receive ( void ) {
 		q = remove_r_queue ();
 		pthread_mutex_unlock ( &q_lock );
 
+		if ( strcasecmp (q->data, "END") == 0 ) {
+			break;
+		}
+
 		fprintf ( outfile, "%s\n", q->data);
 
 		// WRITE TO FILE

@@ -130,12 +130,12 @@ start_compute ( void ) {
 				//Testing
 
 				/* -- MAIN CODE -- */
-				/*
+				//send the mesage <node_number, seq_number, hostname>
+				sprintf (buffer, "<%d, %d, %s>", node_number, seq_number, hostname);
 				for (i = 0; i < MAX_SERVERS; i ++){
-				send the mesage <node_number, seq_number, hostname>
+					send(serv_list[i].sock, buffer, BUFF_SIZE, 0); 
 				}
 				seq_number++;
-				*/
 				/* -- MAIN CODE -- */
 
 				usleep (300);
@@ -159,5 +159,10 @@ start_compute ( void ) {
 		}
 		send ( con_list[i].sock, "END", BUFF_SIZE, 0 );
 		printf ("=> SENT END TO %s\n", con_list[i].name);
+	}
+
+	for ( i = 0; i < MAX_SERVERS; i++ ) {
+		send ( serv_list[i].sock, "END", BUFF_SIZE, 0 );
+		//printf ("=> SENT END TO %s\n", con_list[i].name);
 	}
 }

@@ -57,7 +57,7 @@ main ( int argc, char *argv[] ) {
 		exit ( EXIT_FAILURE );
 	}
 
-	fprintf (outfile, "--- DATA CENTER #%d: %s ---\n", node_number, hostname);
+	//fprintf (outfile, "--- DATA CENTER #%d: %s ---\n", node_number, hostname);
 	//fclose (outfile);
 
 	/*
@@ -106,7 +106,7 @@ main ( int argc, char *argv[] ) {
 	 */
 
 	fclose (outfile);
-	print_con_list();
+	//print_con_list();
 
 	// Have to write the initial connection code here
 

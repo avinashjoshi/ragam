@@ -315,3 +315,100 @@ setup_connect_to ( int port ) {
 	//void *status;
 	//pthread_join ( thread, &status );
 }
+
+
+/*
+ * This function Connects to all other nodes
+ * in the system
+ */
+void
+connect_to_servers ( int port ) {
+
+	int index_list = 0;
+	int sock;
+	pthread_t thread;
+	struct sockaddr_in server;   /* Socket info. for server */
+	struct hostent *hp;   /* Return value from gethostbyname() */
+	char buf[BUFF_SIZE];   /* Received data buffer */
+	int conn_count = 0;
+
+	/* 
+	 * Go through con_list and check
+	 * if socket already exists for the host
+	 * if not, connect & create a new thread
+	 */
+
+	do {
+		for ( index_list = 0; index_list < MAX_SERVERS; index_list++ ) {
+
+			//printf ( "\nTrying %s: ", con_list[index_list].name );
+
+			// Check if socket associated w/ host
+			// MUTEX
+			pthread_mutex_lock (&lock);
+			/*
+			   if ( is_connected ( serv_list[index_list].name ) > -1 ) {
+			//Oops! looks like a socket is associated with that node 
+			pthread_mutex_unlock(&lock);
+			continue;
+			}
+			*/
+			// MUTEX
+
+			/* Preparing to connect to the socket */
+			if ( (hp = gethostbyname(serv_list[index_list].name) ) == NULL) {
+				sprintf( buf, "%s: unknown host\n", serv_list[index_list].name);
+				printf( buf );
+				pthread_mutex_unlock(&lock);
+				continue;
+			}
+
+			bzero ( (char *) &server, sizeof server );
+			server.sin_family = AF_INET;
+			server.sin_port = htons( port );
+			server.sin_addr = *((struct in_addr *) hp->h_addr);
+
+			//zero the rest of the struct
+			memset(&(server.sin_zero), '\0', 8);
+
+			// Looks like host not in con_list
+			// Create a TCP conection to the port
+			/* Opening a socket */
+			if ( (sock = socket ( AF_INET, SOCK_STREAM, 0)) < 0 ) {
+				perror ( "socket()");
+				pthread_mutex_unlock(&lock);
+				continue;
+			}
+
+			/* Try to connect */
+			if ( connect(sock, (struct sockaddr *) &server, sizeof(struct sockaddr)) < 0 ) {
+				perror ("connect()");
+				close(sock);
+				pthread_mutex_unlock(&lock);
+				continue;
+			} else {
+				//printf ("Connected!");
+				// Add to con_list
+				// MUTEX
+				/*
+				   if ( pthread_create ( &thread_h[index_list], NULL, handle_socket, (void *) sock) != 0 ) {
+				   pthread_mutex_unlock(&lock);
+				   continue;
+				   }*/
+				add_to_servlist (serv_list[index_list].name, sock);
+				// MUTEX
+			}
+			pthread_mutex_unlock(&lock);
+		} //end for()
+		pthread_mutex_lock (&lock);
+		if ( all_serv_connected() ) {
+			pthread_mutex_unlock (&lock);
+			break;
+		}
+		pthread_mutex_unlock (&lock);
+	} while ( 1 ); // end while()
+	// thread for handle_socket
+	// to read data on that socket
+	//void *status;
+	//pthread_join ( thread, &status );
+}
