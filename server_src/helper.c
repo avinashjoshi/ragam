@@ -44,7 +44,7 @@ get_program_name ( char argv[] ) {
  * parse config file...
  */
 void
-parse_config ( void ) {
+parse_client_config ( void ) {
 	struct hostent *he;
 	int index = 0;
 	FILE *file;
@@ -53,7 +53,7 @@ parse_config ( void ) {
 	file = fopen ( CLIENT_CONF, "r" );
 	if ( file != NULL ) {
 		char line[HOST_SIZE];
-		while ( index < MAX_SERVERS ) {
+		while ( index < MAX_CLIENTS ) {
 			if ( fgets ( line, sizeof line, file ) == NULL )
 				break;
 			c = strchr (line, '\n');
@@ -102,7 +102,7 @@ int
 add_to_conlist ( char *host, int sock ) {
 	int i = 0;
 	int flag = FALSE;
-	for ( ; i < MAX_SERVERS; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( strcasecmp ( con_list[i].name, host ) == 0 ) {
 			flag = TRUE;
 			break;
@@ -166,4 +166,41 @@ int get_node_index ( char *hostname) {
 			break;
 	}
 	return i;
+}
+
+int get_server_id ( char *hname ) {
+	struct hostent *he;
+	int index = 0;
+	int flag = FALSE;
+	int line_number = -1;
+	FILE *file;
+	char *c;
+
+	file = fopen ( SERVER_CONF, "r" );
+	if ( file != NULL ) {
+		char line[HOST_SIZE];
+		while ( index < MAX_SERVERS ) {
+			if ( fgets ( line, sizeof line, file ) == NULL )
+				break;
+			c = strchr (line, '\n');
+			if (c) {
+				line_number++;
+				*c = 0;
+			}
+			/* Get host name */
+			he = gethostbyname ( line );
+			if ( strcasecmp (he->h_name, hname) == 0 ) {
+				flag = TRUE;
+				break;
+			}
+			index++;
+		}
+		fclose (file);
+	} else {
+		perror ( SERVER_CONF );
+	}
+	if ( flag == TRUE )
+		return line_number;
+	else
+		return -1;
 }

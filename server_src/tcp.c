@@ -96,7 +96,6 @@ void
 		return NULL;
 	}
 
-	add_to_conlist (hostname, sock);
 	pthread_mutex_unlock (&lock);
 	//printf ( "BOUND.... " );
 

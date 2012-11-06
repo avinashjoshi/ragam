@@ -28,7 +28,7 @@ main ( int argc, char *argv[] ) {
 	port = SERVER_PORT;
 #endif
 
-	parse_config ();
+	//parse_client_config ();
 
 	/* 
 	 * Setting defer and request 
@@ -42,7 +42,12 @@ main ( int argc, char *argv[] ) {
 	 * and index in con_list[]
 	 */
 	gethostname ( hostname, sizeof hostname);
-	node_number = get_node_index ( hostname );
+	node_number = get_server_id ( hostname );
+	if ( node_number == -1 ) {
+		fprintf (stderr, "This node cannot be a server! Please check config/server.conf\n");
+		exit (EXIT_FAILURE);
+	}
+	printf ("DATA CENTER #%d: %s\n", node_number, hostname);
 
 	sprintf(filename, "data_centers/s_%d", node_number);
 	outfile = fopen ( filename, "a" );
@@ -52,7 +57,7 @@ main ( int argc, char *argv[] ) {
 		exit ( EXIT_FAILURE );
 	}
 
-	fprintf (outfile, "--- DATA CENTER FOR %s: %s ---\n", node_number, hostname);
+	fprintf (outfile, "--- DATA CENTER #%d: %s ---\n", node_number, hostname);
 	//fclose (outfile);
 
 	/*
