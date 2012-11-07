@@ -108,3 +108,8 @@ d_queue* remove_d_queue ( void );
 int is_d_queue_empty ( void );
 void insert_d_queue ( int, int );
 void print_d_queue ( void );
+
+void parse_server_config ( void );
+void connect_to_servers ( int );
+int add_to_servlist ( char *, int );
+int all_serv_connected ( void );

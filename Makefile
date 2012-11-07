@@ -10,14 +10,12 @@ CFLAGS := -Wall
 LDFLAGS := -pthread
 LDLIBS :=
 
-default: ragam server
+default: client server
 
-client: ragam
+all: client server
 
-all: ragam
-
-ragam: $(OBJECTS)
-	gcc -o ragam $(OBJECTS) $(LDFLAGS)
+client: $(OBJECTS)
+	gcc -o client $(OBJECTS) $(LDFLAGS)
 
 server: $(SERVER_OBJ)
 	gcc -o server $(SERVER_OBJ) $(LDFLAGS)
@@ -25,7 +23,7 @@ server: $(SERVER_OBJ)
 #main.o helper.o: my_header.h
 
 clobber: clean
-	-rm -f ragam server
+	-rm -f client server
 
 clean:
 	-rm -f core $(OBJECTS) $(SERVER_OBJ)

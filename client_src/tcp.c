@@ -60,7 +60,6 @@ void
 	pthread_mutex_lock (&lock);
 
 	int sock;
-	pthread_t thread;
 	struct addrinfo hints, *res;
 	struct sockaddr_in server_address;
 	int reuseaddr = 1; // True
@@ -198,7 +197,6 @@ setup_connect_to ( int port ) {
 
 	int index_list = 0;
 	int sock;
-	pthread_t thread;
 	struct sockaddr_in server;   /* Socket info. for server */
 	struct hostent *hp;   /* Return value from gethostbyname() */
 	char buf[BUFF_SIZE];   /* Received data buffer */
@@ -326,11 +324,9 @@ connect_to_servers ( int port ) {
 
 	int index_list = 0;
 	int sock;
-	pthread_t thread;
 	struct sockaddr_in server;   /* Socket info. for server */
 	struct hostent *hp;   /* Return value from gethostbyname() */
 	char buf[BUFF_SIZE];   /* Received data buffer */
-	int conn_count = 0;
 
 	/* 
 	 * Go through con_list and check

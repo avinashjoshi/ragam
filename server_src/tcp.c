@@ -31,6 +31,9 @@ void
 		pthread_mutex_lock ( &q_lock );
 		insert_r_queue ( buffer );
 		pthread_mutex_unlock ( &q_lock );
+		if ( strcasecmp (buffer, "END" ) == 0 ) {
+			break;
+		}
 		bzero ( buffer, BUFF_SIZE);
 	}
 	close (sock);
@@ -47,7 +50,6 @@ void
 	pthread_mutex_lock (&lock);
 
 	int sock;
-	pthread_t thread;
 	struct addrinfo hints, *res;
 	struct sockaddr_in server_address;
 	int reuseaddr = 1; // True

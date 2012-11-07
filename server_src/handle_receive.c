@@ -17,22 +17,31 @@ handle_receive ( void ) {
 	// Check if there is data in the queue
 
 	r_queue *q;
-	int ts, node, mode;
-	char *token;
-	char buffer[BUFF_SIZE];
 	//printf ("\n INSIDE HANDLE_RECEIVE()\n");
 	while ( 1 ) {
+		// Check if all clients sent END msg
+		pthread_mutex_lock ( &end_lock );
+		if ( end == MAX_CLIENTS ) {
+			pthread_mutex_unlock ( &end_lock );
+			break;
+		}
+		pthread_mutex_unlock ( &end_lock );
+		// Check if queue is empty
 		pthread_mutex_lock ( &q_lock );
 		if ( is_r_queue_empty() == TRUE ) {
 			pthread_mutex_unlock( &q_lock );
 			usleep(100);
 			continue;
 		}
+		//if not, remove data from queue
 		q = remove_r_queue ();
 		pthread_mutex_unlock ( &q_lock );
 
 		if ( strcasecmp (q->data, "END") == 0 ) {
-			break;
+			pthread_mutex_lock ( &end_lock );
+			end++;
+			pthread_mutex_unlock ( &end_lock );
+			continue;
 		}
 
 		fprintf ( outfile, "%s\n", q->data);
@@ -41,5 +50,5 @@ handle_receive ( void ) {
 
 	}
 
-	return NULL;
+	return;
 }

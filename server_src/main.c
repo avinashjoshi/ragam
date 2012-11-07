@@ -37,6 +37,8 @@ main ( int argc, char *argv[] ) {
 	time_t total_start, total_stop;
 	r_q = NULL;
 
+	end = 0;
+
 	/*
 	 * Get hostname for this node
 	 * and index in con_list[]
@@ -73,30 +75,9 @@ main ( int argc, char *argv[] ) {
 	 */
 	setup_listen_thread ( port );
 
-	/*
-	 * Start handle_request thread
-	pthread_t thread;
-	if ( pthread_create ( &thread, NULL, handle_receive, (void *) NULL ) != 0 ) {
-		fprintf ( stderr, "Oops! Could not fork handle_request() thread\n");
-		exit (EXIT_FAILURE);
-	}
-	 */
-
 	handle_receive();
 
 	time (&total_stop);
-
-	/*
-	fprintf ( stdout, "Waiting for scanf...." );
-	int a;
-	scanf ( "%d", &a );
-	*/
-
-	/*
-	while (end_compute < MAX_SERVERS - 1 )
-		usleep(1000);
-	printf ("\n:End = %d:\n", end_compute);
-	*/
 
 	/*
 	 * Closing all sockets before quiting program

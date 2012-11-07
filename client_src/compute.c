@@ -62,7 +62,6 @@ start_compute ( void ) {
 
 	struct timeval earlier;
 	struct timeval later;
-	struct timeval interval;
 
 	int unit = 100;
 	int sleep_time;

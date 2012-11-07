@@ -31,7 +31,6 @@ main ( int argc, char *argv[] ) {
 
 	server_port = SERVER_PORT;
 
-	int i;
 	seq_number = 0;
 	end_compute = 0;
 
@@ -119,15 +118,6 @@ main ( int argc, char *argv[] ) {
 		usleep(1000);
 	printf ("\n:End = %d:\n", end_compute);
 
-	/*
-	int i;
-	(void) pthread_join (thread, NULL);
-	for ( i = 0; i < MAX_CLIENTS; i++ )
-		(void) pthread_join (thread_h[i], NULL);
-	while (end_compute < MAX_CLIENTS - 1 )
-		usleep(1000);
-
-		*/
 	/*
 	 * Closing all sockets before quiting program
 	for ( i = 0; i < MAX_CLIENTS; i++ ) {

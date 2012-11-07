@@ -16,6 +16,9 @@
 
 pthread_mutex_t q_lock;
 pthread_mutex_t lock;
+pthread_mutex_t end_lock;
+
+int end;
 
 pthread_t thread_h[MAX_CLIENTS];
 
@@ -71,3 +74,4 @@ r_queue* remove_r_queue ( void );
 int is_r_queue_empty ( void );
 void insert_r_queue ( char * );
 void print_r_queue ( void );
+int get_server_id ( char * );
