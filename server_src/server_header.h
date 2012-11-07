@@ -32,7 +32,7 @@ struct node {
 	int sock;
 	char name[HOST_SIZE];
 	int status;
-} con_list [ MAX_SERVERS ];
+} con_list [ MAX_CLIENTS ];
 
 /* Linked List for algorithm */
 /*

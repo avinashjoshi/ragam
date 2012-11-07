@@ -3,8 +3,6 @@ ROOT_DIR="/home/004/a/ax/axj107420/aos/ragam"
 clients=`cat $ROOT_DIR/config/commons.h | grep MAX_CLIENTS | cut -f3 -d" "`
 servers=`cat $ROOT_DIR/config/commons.h | grep MAX_SERVERS | cut -f3 -d" "`
 total=`expr $clients + $servers`
-echo $total
-#echo "-------  :file:  ---- :stdout:"
 for ((i=1;i<=$servers;i+=1)); do
 	s=`printf "%02d" $i`;
 	echo net$s

@@ -28,7 +28,7 @@ main ( int argc, char *argv[] ) {
 	port = SERVER_PORT;
 #endif
 
-	//parse_client_config ();
+	parse_client_config ();
 
 	/* 
 	 * Setting defer and request 

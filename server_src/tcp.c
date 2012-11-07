@@ -126,7 +126,6 @@ void
 			DBG (( "\nReceived connection from %s on socket %d\n", inet_ntoa(their_addr.sin_addr), newsock ));
 			inet_pton(AF_INET, inet_ntoa(their_addr.sin_addr), &ipv4addr);
 			he = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
-			//printf ("\nADDING %s TO CON_LIST\n", he->h_name);
 
 			if ( is_connected(he->h_name) > -1 ) {
 				//printf ("Server -- already connected");
