@@ -108,12 +108,7 @@ start_compute ( void ) {
 			pthread_mutex_lock ( &requesting_lock );
 			if ( total_requests == MAX_CLIENTS - 1 ) {
 				pthread_mutex_unlock ( &requesting_lock );
-				//Testing
-				FILE *s1 = fopen("s1","a");
-				fprintf (s1, "%d:%d\n", node_number, attempt);
-				printf ("s1:%d:%d\n", node_number, attempt);
-				fclose(s1);
-				//Testing
+
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = TRUE;
 				pthread_mutex_unlock ( &critical_lock);
@@ -121,15 +116,11 @@ start_compute ( void ) {
 				gettimeofday(&later,NULL);
 				printf ("Phew... Got access in %lld u~seconds.\n sleeping for 300 useconds\n", timeval_diff(NULL,&later,&earlier));
 				fprintf ( fp, "%d\t\t%lld\n", attempt, timeval_diff(NULL,&later,&earlier));
-				//Testing
-				FILE *s2 = fopen("s2","a");
-				fprintf (s2, "%d:%d\n", node_number, attempt);
-				printf ("s2:%d:%d\n", node_number, attempt);
-				fclose(s2);
-				//Testing
 
 				/* -- MAIN CODE -- */
 				//send the mesage <node_number, seq_number, hostname>
+
+				bzero ( buffer, BUFF_SIZE );
 				sprintf (buffer, "<%d, %d, %s>", node_number, seq_number, hostname);
 				for (i = 0; i < MAX_SERVERS; i ++){
 					send(serv_list[i].sock, buffer, BUFF_SIZE, 0); 
@@ -137,7 +128,7 @@ start_compute ( void ) {
 				seq_number++;
 				/* -- MAIN CODE -- */
 
-				usleep (300);
+				//usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
 				pthread_mutex_unlock ( &critical_lock );

@@ -39,8 +39,8 @@ Method II]
   $ make clobber
   $ make
 Go to each node and execute the the server of client code:
-server: $ ./server
-client: $ ./client
+server: $ ./ragam_server
+client: $ ./ragam_client
 
 Analysis / Verification
 ============================
@@ -55,8 +55,8 @@ There are several scripts available in the scripts folder:
 - cleanup.sh  -- cleans all un-necessary files in the project
 - setup.sh    -- cleanup & make
 - automate.sh -- setup
-                 ssh to every server & run ./server script
-                 ssh to every client & run ./client script
+                 ssh to every server & run ./ragam_server script
+                 ssh to every client & run ./ragam_client script
 - kill.sh     -- If your program is stuck, for any reason,
                   use this to kill all client and server script
 - verify.sh   -- As described in the Analysis section

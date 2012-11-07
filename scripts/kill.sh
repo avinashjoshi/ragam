@@ -8,12 +8,12 @@ echo $total
 for ((i=1;i<=$servers;i+=1)); do
 	s=`printf "%02d" $i`;
 	echo net$s
-	echo "ssh to net$s and killing server"
-	ssh -n -f net$s "pkill -9 server"
+	echo "ssh to net$s and killing ragam_server"
+	ssh -n -f net$s "pkill -9 ragam_server"
 done
 for ((;i<=$total;i+=1)); do
 	s=`printf "%02d" $i`;
 	echo net$s
-	echo "ssh to net$s and killing client"
-	ssh -n -f net$s "pkill -9 client"
+	echo "ssh to net$s and killing ragam_client"
+	ssh -n -f net$s "pkill -9 ragam_client"
 done

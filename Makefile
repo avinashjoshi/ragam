@@ -15,15 +15,13 @@ default: client server
 all: client server
 
 client: $(OBJECTS)
-	gcc -o client $(OBJECTS) $(LDFLAGS)
+	gcc -o ragam_client $(OBJECTS) $(LDFLAGS)
 
 server: $(SERVER_OBJ)
-	gcc -o server $(SERVER_OBJ) $(LDFLAGS)
-
-#main.o helper.o: my_header.h
+	gcc -o ragam_server $(SERVER_OBJ) $(LDFLAGS)
 
 clobber: clean
-	-rm -f client server
+	-rm -f ragam_client ragam_server
 
 clean:
 	-rm -f core $(OBJECTS) $(SERVER_OBJ)
