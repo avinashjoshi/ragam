@@ -60,7 +60,7 @@ main ( int argc, char *argv[] ) {
 	}
 
 	//fprintf (outfile, "--- DATA CENTER #%d: %s ---\n", node_number, hostname);
-	//fclose (outfile);
+	fclose (outfile);
 
 	/*
 	 * Timestamp is the node number
@@ -86,7 +86,7 @@ main ( int argc, char *argv[] ) {
 	}
 	 */
 
-	fclose (outfile);
+	//fclose (outfile);
 	//print_con_list();
 
 	// Have to write the initial connection code here

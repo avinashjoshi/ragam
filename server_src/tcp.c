@@ -23,6 +23,7 @@ void
 	//fprintf ( stdout, "Entering Main Computation area.... Socket used is: %d | %s\n", sock, get_node_name_from_socket (sock) );
 	while ( 1 ) {
 		bzero ( buffer, BUFF_SIZE);
+		usleep (300);
 		recv (sock, buffer, BUFF_SIZE, 0);
 		if ( strcasecmp (buffer, "" ) == 0 ) {
 			continue;
@@ -126,12 +127,6 @@ void
 			DBG (( "\nReceived connection from %s on socket %d\n", inet_ntoa(their_addr.sin_addr), newsock ));
 			inet_pton(AF_INET, inet_ntoa(their_addr.sin_addr), &ipv4addr);
 			he = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
-
-			if ( is_connected(he->h_name) > -1 ) {
-				//printf ("Server -- already connected");
-				pthread_mutex_unlock (&lock);
-				continue;
-			}
 
 			if ( pthread_create ( &thread_h[get_node_index(he->h_name)], NULL, handle_socket, (void *) newsock) != 0 ) {
 				fprintf ( stderr, "Failed to create thread :(\n" );

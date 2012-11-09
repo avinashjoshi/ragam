@@ -44,7 +44,9 @@ handle_receive ( void ) {
 			continue;
 		}
 
+		outfile = fopen ( filename, "a" );
 		fprintf ( outfile, "%s\n", q->data);
+		fclose (outfile);
 
 		// WRITE TO FILE
 

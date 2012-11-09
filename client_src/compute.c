@@ -128,7 +128,7 @@ start_compute ( void ) {
 				seq_number++;
 				/* -- MAIN CODE -- */
 
-				//usleep (300);
+				usleep (300);
 				pthread_mutex_lock ( &critical_lock );
 				is_in_critical = FALSE;
 				pthread_mutex_unlock ( &critical_lock );

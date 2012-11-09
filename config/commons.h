@@ -9,8 +9,8 @@
  * (Usefule while testing on local)
  */
 
-#define CLIENT_PORT 56744
-#define SERVER_PORT 56744
+#define CLIENT_PORT 5674
+#define SERVER_PORT 5674
 
 #define SERVER_CONF "config/server.conf"
 #define CLIENT_CONF "config/client.conf"

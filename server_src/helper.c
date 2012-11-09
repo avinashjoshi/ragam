@@ -81,7 +81,7 @@ int
 is_connected ( char *node) {
 	int index = 0;
 	int flag = FALSE;
-	for ( ; index < MAX_SERVERS; index++ ) {
+	for ( ; index < MAX_CLIENTS; index++ ) {
 		if ( strcasecmp ( con_list[index].name, node ) == 0 ) {
 			if ( con_list[index].status == TRUE ) {
 				flag = TRUE;
@@ -125,7 +125,7 @@ void
 print_con_list ( void ) {
 	int i;
 	printf ( "\n\n CONN LIST:\n");
-	for ( i = 0; i < MAX_SERVERS; i++ ) {
+	for ( i = 0; i < MAX_CLIENTS; i++ ) {
 		printf ( "%d : %s\n", con_list[i].sock, con_list[i].name);
 	}
 }
@@ -152,7 +152,7 @@ all_connected ( void ) {
 char *
 get_node_name_from_socket ( int sock ) {
 	int i = 0;
-	for ( ; i < MAX_SERVERS; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( sock == con_list[i].sock )
 			break;
 	}
@@ -161,7 +161,7 @@ get_node_name_from_socket ( int sock ) {
 
 int get_node_index ( char *hostname) {
 	int i = 0;
-	for ( ; i < MAX_SERVERS; i++ ) {
+	for ( ; i < MAX_CLIENTS; i++ ) {
 		if ( strcasecmp ( con_list[i].name, hostname) == 0 )
 			break;
 	}
